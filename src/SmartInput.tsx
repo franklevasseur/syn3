@@ -9,9 +9,9 @@ type SmartInputProps = {
 
 export const SmartInput = (props: SmartInputProps) => {
   const [value, setValue] = useState(props.initialValue);
-  const onChange = useMemo<() => void>(
-    () => _.debounce(() => props.onChange(value), 3000),
-    [props.onChange]
+  const onChange = useMemo<(v: string) => void>(
+    () => _.debounce((v: string) => props.onChange(v), 3000),
+    [props]
   );
 
   return (
@@ -20,8 +20,9 @@ export const SmartInput = (props: SmartInputProps) => {
       className="smart-input-box"
       value={value}
       onChange={(e) => {
-        setValue(e.target.value);
-        onChange();
+        const newValue = e.target.value;
+        setValue(newValue);
+        onChange(newValue);
       }}
     />
   );
