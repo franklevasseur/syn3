@@ -1,27 +1,28 @@
 import _ from "lodash";
+import { CharRange } from "./typings";
 
 export type TokenType =
   | "opening-bracket"
   | "closing-bracket"
   | "white-space"
   | "text";
-export type CharRange = { start: number; end: number; raw: string };
-export type Token = CharRange & { type: TokenType };
-export type ExtractionResult = { extracted: Token[]; remaining: CharRange[] };
+export type RawToken = CharRange & { raw: string };
+export type Token = RawToken & { type: TokenType };
+export type ExtractionResult = { extracted: Token[]; remaining: RawToken[] };
 
 // unescaped opening square bracket
 const OPENING_BRACKET_REGX = /(?<!\\)\[/g;
 const CLOSING_BRACKET_REGX = /(?<!\\)\]/g;
 const WHITE_SPACE_REGX = /\s+/g;
 
-const sortRanges = <R extends CharRange>(ranges: R[]) =>
-  _.sortBy(ranges, (u: CharRange) => u.start);
+const sortRanges = <R extends RawToken>(ranges: R[]) =>
+  _.sortBy(ranges, (u: RawToken) => u.start);
 
 const computeRemaining = (
-  original: CharRange,
-  extracted: CharRange[]
-): CharRange[] => {
-  const remaining: CharRange[] = [];
+  original: RawToken,
+  extracted: RawToken[]
+): RawToken[] => {
+  const remaining: RawToken[] = [];
 
   const offset = original.start;
 
@@ -49,7 +50,7 @@ const computeRemaining = (
 };
 
 const extractSingleUnit = (
-  unit: CharRange,
+  unit: RawToken,
   type: TokenType,
   regx: () => RegExp
 ): ExtractionResult => {
@@ -74,12 +75,12 @@ const extractSingleUnit = (
 };
 
 const extractRegex = (
-  units: CharRange[],
+  units: RawToken[],
   tokType: TokenType,
   regx: () => RegExp
 ): ExtractionResult => {
   let extracted: Token[] = [];
-  let remaining: CharRange[] = [];
+  let remaining: RawToken[] = [];
 
   for (const u of units) {
     const { extracted: singleExtraction, remaining: singleRemaining } =

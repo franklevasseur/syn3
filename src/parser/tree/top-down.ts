@@ -1,26 +1,25 @@
-import { TreeParsingError } from "./errors";
-import { Stack } from "./stack";
-import { Token } from "./tokenizer";
+import { TreeParsingError } from "../errors";
+import { Stack } from "../stack";
+import { Token } from "../tokenizer";
+import { POSNode } from "./typings";
+import { CharRange } from "../typings";
 
-// Top-down tree
-
-export type CharRange = { start: number; end: number };
 export type TopDownWordNode = CharRange & {
   type: "word";
   depth: number;
-  word: string;
+  text: string;
 };
 export type TopDownPhraseNode = CharRange & {
   type: "phrase";
   depth: number;
-  posTag: string;
+  posTag: POSNode;
   children: TopDownTreeNode[];
 };
 export type TopDownTreeNode = TopDownWordNode | TopDownPhraseNode;
 
 const EMPTY_TOP_DOWN_PHRASE = (): TopDownPhraseNode => ({
   type: "phrase",
-  posTag: "NONE",
+  posTag: { text: "NONE", start: -1, end: -1 },
   depth: -1,
   start: -1,
   end: -1,
@@ -44,7 +43,7 @@ export const buildTopDownTree = (tokens: Token[]): TopDownTreeNode[] => {
       }
 
       const current = stack.peek()!;
-      current.posTag = token.raw;
+      current.posTag = { start: token.start, end: token.end, text: token.raw };
       state = "POS_TAG";
       continue;
     }
@@ -70,7 +69,7 @@ export const buildTopDownTree = (tokens: Token[]): TopDownTreeNode[] => {
         current.children.push({
           type: "word",
           depth: current.depth + 1,
-          word: token.raw,
+          text: token.raw,
           start: token.start,
           end: token.end,
         });
@@ -95,7 +94,7 @@ export const buildTopDownTree = (tokens: Token[]): TopDownTreeNode[] => {
       current.children.push({
         type: "word",
         depth: current.depth + 1,
-        word: token.raw,
+        text: token.raw,
         start: token.start,
         end: token.end,
       });
@@ -126,65 +125,4 @@ export const buildTopDownTree = (tokens: Token[]): TopDownTreeNode[] => {
   }
 
   return root.children;
-};
-
-// Bottom-up tree
-
-export type BottomUpWordNode = CharRange & {
-  type: "word";
-  floor: number;
-  word: string;
-  parent: BottomUpPhraseNode;
-};
-export type BottomUpPhraseNode = CharRange & {
-  type: "phrase";
-  floor: number;
-  posTag: string;
-  parent: BottomUpPhraseNode | undefined;
-};
-
-type BottomUpTreeState = { leafs: BottomUpWordNode[] };
-
-const reversePhrase = (
-  state: BottomUpTreeState,
-  tdnode: TopDownPhraseNode
-): {
-  state: BottomUpTreeState;
-  node: BottomUpPhraseNode;
-} => {
-  const { children, depth, ...node } = tdnode;
-  const reversed: BottomUpPhraseNode = {
-    ...node,
-    floor: -1,
-    parent: undefined,
-  };
-  const newState: BottomUpTreeState = { leafs: [...state.leafs] };
-  for (const tdchild of children) {
-    if (tdchild.type === "word") {
-      const { depth, ...child } = tdchild;
-      const reversedChild: BottomUpWordNode = {
-        ...child,
-        floor: 0,
-        parent: reversed,
-      };
-      reversed.floor = Math.max(reversed.floor, 1);
-      newState.leafs.push(reversedChild);
-    } else {
-      const { node: reversedChild, state: childState } = reversePhrase(
-        state,
-        tdchild
-      );
-      reversedChild.parent = reversed;
-      reversed.floor = Math.max(reversed.floor, reversedChild.floor + 1);
-      newState.leafs.push(...childState.leafs);
-    }
-  }
-  return { node: reversed, state: newState };
-};
-
-export const reverseTree = (tree: TopDownTreeNode[]): BottomUpWordNode[] => {
-  const root: TopDownPhraseNode = EMPTY_TOP_DOWN_PHRASE();
-  root.children = [...tree];
-  const { state } = reversePhrase({ leafs: [] }, root);
-  return state.leafs;
 };

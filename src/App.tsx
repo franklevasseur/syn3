@@ -1,5 +1,4 @@
 import "./App.css";
-import { parse } from "./parser";
 import { SmartInput } from "./SmartInput";
 
 function App() {
@@ -7,9 +6,8 @@ function App() {
     <div className="App">
       <SmartInput
         initialValue="mon chien mange des croquettes sans viande lentement"
-        onChange={(text: string) => {
-          const ast = parse(text);
-          console.log(ast);
+        onChange={(tree) => {
+          console.log(tree);
         }}
       />
     </div>
