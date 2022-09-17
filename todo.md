@@ -1,0 +1,3 @@
+- [ ] Display brackets and pos tags in color with Draft.js
+- [ ] Display errors with red underline in Draft.js
+- [ ] Display syntax tree structure below the input box
