@@ -4,7 +4,7 @@ export type TokenType =
   | "opening-bracket"
   | "closing-bracket"
   | "white-space"
-  | "word";
+  | "text";
 export type CharRange = { start: number; end: number; raw: string };
 export type Token = CharRange & { type: TokenType };
 export type ExtractionResult = { extracted: Token[]; remaining: CharRange[] };
@@ -117,7 +117,7 @@ export const tokenize = (input: string): Token[] => {
     );
 
   const words: Token[] = remainingWhiteSpaces.map((u) => ({
-    type: "word",
+    type: "text",
     ...u,
   }));
 

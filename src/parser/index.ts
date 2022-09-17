@@ -1,7 +1,8 @@
-import { Node, buildTree } from "./tree";
-import { Token, tokenize } from "./tokenizer";
+import { buildTree } from "./tree";
+import { tokenize } from "./tokenizer";
 
 export const parse = (input: string) => {
   const tokens = tokenize(input);
-  return buildTree(tokens);
+  const tree = buildTree(tokens);
+  return tree;
 };

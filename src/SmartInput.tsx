@@ -1,5 +1,6 @@
 import "./SmartInput.css";
-import { useState } from "react";
+import { useState, useMemo } from "react";
+import _ from "lodash";
 
 type SmartInputProps = {
   initialValue: string;
@@ -8,6 +9,11 @@ type SmartInputProps = {
 
 export const SmartInput = (props: SmartInputProps) => {
   const [value, setValue] = useState(props.initialValue);
+  const onChange = useMemo<() => void>(
+    () => _.debounce(() => props.onChange(value), 3000),
+    [props.onChange]
+  );
+
   return (
     <input
       type="text"
@@ -15,7 +21,7 @@ export const SmartInput = (props: SmartInputProps) => {
       value={value}
       onChange={(e) => {
         setValue(e.target.value);
-        props.onChange(e.target.value);
+        onChange();
       }}
     />
   );
