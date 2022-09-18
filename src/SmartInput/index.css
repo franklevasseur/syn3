@@ -1,10 +1,15 @@
-.DraftEditor-root {
+.editor-root {
     font-size: 1.5rem;
-    border-radius: 10px;
+    border-radius: 5px;
     border: solid;
-    margin: 1%;
-    border-width: 2px;
+    border-width: 1px;
     text-align: left;
     background: #f1f1f1;
     padding: 0.25%;
+    margin-bottom: 1%;
+}
+
+.editor-error {
+    border: red solid 1px;
+    background-color: #ffdbdb;
 }

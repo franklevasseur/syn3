@@ -1,13 +1,13 @@
 // forked from https://github.com/Soreine/draft-js-simpledecorator/blob/master/index.js
 import * as draft from "draft-js";
 import * as Immutable from "immutable";
-import { parse } from "../parser";
+import { parse, tree } from "../parser";
 import { TreeParsingError } from "../parser/errors";
 import { treeToColor } from "./tree2colors";
 
 const KEY_SEPARATOR = "▁";
 
-type ColorProps =
+type TreeProps =
   | {
       type: "brackets";
       color: number | undefined;
@@ -18,8 +18,15 @@ type ComponentProps = {
   children: React.ReactNode;
 };
 
-export class ColorDecorator implements draft.DraftDecoratorType {
-  private decorated: Record<string, ColorProps[]> = {};
+export type TreeEvent =
+  | { type: "error"; err: TreeParsingError }
+  | { type: "parse"; tree: tree.bottomup.BottomUpWordNode[] };
+export type TreeListener = (e: TreeEvent) => void;
+
+export class TreeDecorator implements draft.DraftDecoratorType {
+  private decorated: Record<string, TreeProps[]> = {};
+
+  constructor(private _listeners: TreeListener[] = []) {}
 
   public getDecorations(
     block: draft.ContentBlock,
@@ -34,7 +41,7 @@ export class ColorDecorator implements draft.DraftDecoratorType {
     this.decorated[blockKey] = [];
 
     // Apply a decoration to given range, with given props
-    this._strategy(block, (start: number, end: number, props: ColorProps) => {
+    this._strategy(block, (start: number, end: number, props: TreeProps) => {
       key = blockKey + KEY_SEPARATOR + decorationId;
       this.decorated[blockKey][decorationId] = props;
       this._decorateRange(decorations, start, end, key);
@@ -68,12 +75,12 @@ export class ColorDecorator implements draft.DraftDecoratorType {
 
   private _strategy = (
     block: draft.ContentBlock,
-    callback: (start: number, end: number, props: ColorProps) => void,
-    contentState?: draft.ContentState
+    callback: (start: number, end: number, props: TreeProps) => void
   ) => {
     const text = block.getText();
     try {
       const { bottomUpTree: tree } = parse(text);
+      this._emitEvent({ type: "parse", tree });
       const colors = treeToColor(tree, text);
       for (const span of colors) {
         if (span.color === undefined) {
@@ -84,6 +91,7 @@ export class ColorDecorator implements draft.DraftDecoratorType {
     } catch (thrown) {
       const err = thrown instanceof Error ? thrown : new Error(`${thrown}`);
       if (err instanceof TreeParsingError) {
+        this._emitEvent({ type: "error", err });
         callback(err.range.start, err.range.end, {
           type: "error",
           message: err.message,
@@ -94,7 +102,7 @@ export class ColorDecorator implements draft.DraftDecoratorType {
     }
   };
 
-  private _component = (props: ColorProps & ComponentProps) => {
+  private _component = (props: TreeProps & ComponentProps) => {
     if (props.type === "error") {
       return (
         <span
@@ -126,5 +134,11 @@ export class ColorDecorator implements draft.DraftDecoratorType {
       "#0000FF", // dark blue
     ];
     return colors[n % colors.length];
+  };
+
+  private _emitEvent = (e: TreeEvent) => {
+    for (const listener of this._listeners) {
+      listener(e);
+    }
   };
 }
