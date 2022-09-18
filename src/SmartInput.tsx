@@ -2,6 +2,7 @@ import "./SmartInput.css";
 import { useState, useMemo } from "react";
 import _ from "lodash";
 import { parse, tree } from "./parser";
+import * as draft from "draft-js";
 
 type SmartInputProps = {
   initialValue: string;
@@ -61,27 +62,29 @@ const treeToColor = (t: tree.bottomup.BottomUpWordNode[]): ColoredText[] => {
 };
 
 export const SmartInput = (props: SmartInputProps) => {
-  const [value, setValue] = useState(props.initialValue);
+  const [editorState, setEditorState] = useState(() =>
+    draft.EditorState.createWithContent(
+      draft.ContentState.createFromText(props.initialValue)
+    )
+  );
+
   const onChange = useMemo<(v: string) => void>(
     () =>
       _.debounce((v: string) => {
         const { bottomUpTree: tree } = parse(v);
         const colors = treeToColor(tree);
-        console.log({ colors });
+        console.log(colors);
         props.onChange(tree);
       }, 3000),
     [props]
   );
 
   return (
-    <input
-      type="text"
-      className="smart-input-box"
-      value={value}
-      onChange={(e) => {
-        const newValue = e.target.value;
-        setValue(newValue);
-        onChange(newValue);
+    <draft.Editor
+      editorState={editorState}
+      onChange={(newState) => {
+        onChange(newState.getCurrentContent().getPlainText());
+        setEditorState(newState);
       }}
     />
   );
