@@ -1,5 +1,6 @@
+@import "~@blueprintjs/popover2/lib/css/blueprint-popover2.css";
+
 .App {
-  text-align: center;
   margin: 1%;
 }
 

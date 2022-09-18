@@ -5,6 +5,8 @@ import { parse, tree } from "../parser";
 import { TreeParsingError } from "../parser/errors";
 import { treeToColor } from "./tree2colors";
 
+import { Tooltip2 } from "@blueprintjs/popover2";
+
 const KEY_SEPARATOR = "▁";
 
 type TreeProps =
@@ -105,14 +107,16 @@ export class TreeDecorator implements draft.DraftDecoratorType {
   private _component = (props: TreeProps & ComponentProps) => {
     if (props.type === "error") {
       return (
-        <span
-          style={{
-            textDecoration: "underline red 4px",
-            textDecorationSkipInk: "none",
-          }}
-        >
-          {props.children}
-        </span>
+        <Tooltip2 content={props.message} position="bottom" intent="danger">
+          <span
+            style={{
+              textDecoration: "underline red 4px",
+              textDecorationSkipInk: "none",
+            }}
+          >
+            {props.children}
+          </span>
+        </Tooltip2>
       );
     }
 
