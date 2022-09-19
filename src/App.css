@@ -1,9 +1,27 @@
 @import "~@blueprintjs/popover2/lib/css/blueprint-popover2.css";
 
 .App {
-  margin: 1%;
+  padding: 1%;
+  background: white;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 .error-message {
   text-align: left;
+}
+
+.title-box {
+  margin: 0 0 1% 0;
+}
+
+.title-text {
+  font-size: 2rem;
+  font-weight: bold;
+  text-align: center;
+  color: #316BCD;
+}
+
+.editor-box {
 }

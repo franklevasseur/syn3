@@ -16,6 +16,7 @@ export type TopDownPhraseNode = CharRange & {
   children: TopDownTreeNode[];
 };
 export type TopDownTreeNode = TopDownWordNode | TopDownPhraseNode;
+export type TopDownTree = TopDownTreeNode[];
 
 const EMPTY_TOP_DOWN_PHRASE = (): TopDownPhraseNode => ({
   type: "phrase",
@@ -27,7 +28,7 @@ const EMPTY_TOP_DOWN_PHRASE = (): TopDownPhraseNode => ({
 });
 
 type TopDownTreeState = "OPENING" | "POS_TAG" | "WORDS" | "CLOSING";
-export const buildTopDownTree = (tokens: Token[]): TopDownTreeNode[] => {
+export const buildTopDownTree = (tokens: Token[]): TopDownTree => {
   const root: TopDownPhraseNode = EMPTY_TOP_DOWN_PHRASE();
   const stack = new Stack<TopDownPhraseNode>();
   stack.push(root);

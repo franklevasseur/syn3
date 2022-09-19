@@ -43,7 +43,7 @@ const phraseToColor = (
 };
 
 export const treeToColor = (
-  t: tree.bottomup.BottomUpWordNode[],
+  t: tree.bottomup.BottomUpTree,
   code: string
 ): ColoredText[] => {
   let state: ColorsState = { coloredNodes: [], colors: [] };

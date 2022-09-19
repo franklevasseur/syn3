@@ -1,5 +1,5 @@
 import { CharRange } from "../typings";
-import { TopDownPhraseNode, TopDownTreeNode } from "./top-down";
+import { TopDownPhraseNode, TopDownTree } from "./top-down";
 import { POSNode } from "./typings";
 
 export type BottomUpWordNode = CharRange & {
@@ -14,6 +14,7 @@ export type BottomUpPhraseNode = CharRange & {
   posTag: POSNode;
   parent: BottomUpPhraseNode | undefined;
 };
+export type BottomUpTree = BottomUpWordNode[];
 
 type BottomUpTreeState = { leafs: BottomUpWordNode[] };
 
@@ -60,7 +61,7 @@ const reversePhrase = (
   return { node: reversed, state: newState };
 };
 
-export const reverseTree = (tree: TopDownTreeNode[]): BottomUpWordNode[] => {
+export const reverseTree = (tree: TopDownTree): BottomUpTree => {
   const state: BottomUpTreeState = { leafs: [] };
   for (const tdnode of tree) {
     if (tdnode.type === "word") {
