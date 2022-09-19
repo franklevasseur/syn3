@@ -1,31 +1,29 @@
-import { useState } from "react";
-import "./App.css";
-import { tree } from "./parser";
-import { SmartInput } from "./SmartInput";
-import { TreeView } from "./TreeView";
+import { useState } from 'react'
+import './App.css'
+import { tree } from './parser'
+import { SmartInput } from './SmartInput'
+import { TreeView } from './TreeView'
 
 const DEFAULT_INITIAL_VALUE =
-  "[P [Sn [det mon] [nom chien]] [Sv [v mange] [Sn [det des] [n croquettes]] [Sprep [prep sans] [nom viande]] [Sadv [adv lentement]]]]";
+  '[P [Sn [det mon] [nom chien]] [Sv [v mange] [Sn [det des] [n croquettes]] [Sprep [prep sans] [nom viande]] [Sadv [adv lentement]]]]'
 
 const getQueryText = (): string | null => {
-  const url = new URL(window.location.toString());
-  return url.searchParams.get("text");
-};
+  const url = new URL(window.location.toString())
+  return url.searchParams.get('text')
+}
 
 const setQueryText = (text: string | null) => {
-  const url = new URL(window.location.toString());
+  const url = new URL(window.location.toString())
   if (text !== null) {
-    url.searchParams.set("text", text || "");
+    url.searchParams.set('text', text || '')
   }
-  window.history.pushState({}, "", url.toString());
-};
+  window.history.pushState({}, '', url.toString())
+}
 
 const App = () => {
-  const [tree, setTree] = useState<tree.topdown.TopDownTree | undefined>(
-    undefined
-  );
+  const [tree, setTree] = useState<tree.topdown.TopDownTree | undefined>(undefined)
 
-  const initialValue = getQueryText() || DEFAULT_INITIAL_VALUE;
+  const initialValue = getQueryText() || DEFAULT_INITIAL_VALUE
 
   return (
     <div className="App">
@@ -36,20 +34,20 @@ const App = () => {
         <SmartInput
           initialValue={initialValue}
           onChange={({ tree }) => {
-            if (tree.type === "parse") {
-              setTree(tree.topDown);
+            if (tree.type === 'parse') {
+              setTree(tree.topDown)
             }
-            if (tree.type === "error") {
-              setTree(undefined);
+            if (tree.type === 'error') {
+              setTree(undefined)
             }
 
-            setQueryText(tree.text);
+            setQueryText(tree.text)
           }}
         />
         {tree && <TreeView tree={tree} />}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default App;
+export default App
