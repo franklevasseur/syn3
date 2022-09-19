@@ -4,4 +4,4 @@
 - [ ] CHORE/BUG : Syntax highlighting for braces should be independent of the syntax parser
 - [ ] CHORE : merge bottomup and topdown trees into one
 - [ ] FEAT : Use query params to store the input text
-- [ ] FEAT : Color tree nodes with the same color as the corresponding bracket
+- [ ] FEAT : Color tree nodes and branches with the same color as the corresponding bracket
