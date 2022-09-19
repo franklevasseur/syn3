@@ -1,4 +1,7 @@
 - [x] FEAT : Display brackets and pos tags in color with Draft.js
 - [x] FEAT : Display errors with red underline in Draft.js
-- [ ] FEAT : Display syntax tree structure below the input box
+- [x] FEAT : Display syntax tree structure below the input box
 - [ ] CHORE/BUG : Syntax highlighting for braces should be independent of the syntax parser
+- [ ] CHORE : merge bottomup and topdown trees into one
+- [ ] FEAT : Use query params to store the input text
+- [ ] FEAT : Color tree nodes with the same color as the corresponding bracket
