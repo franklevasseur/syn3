@@ -31,8 +31,8 @@ const renderForeignObjectNode = ({ nodeDatum }: CustomNodeElementProps) => {
   const x = -nodeDatum.name.length * 6
   const y = isLeaf ? 5 : -40
 
-  const width = nodeDatum.name.length * 15
-  const height = 30
+  const width = nodeDatum.name.length * 20
+  const height = 150
 
   const svgProps: React.SVGProps<SVGForeignObjectElement> = {
     x,
