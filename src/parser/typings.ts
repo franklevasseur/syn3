@@ -1,1 +1,1 @@
-export type CharRange = { start: number; end: number };
+export type CharRange = { start: number; end: number }

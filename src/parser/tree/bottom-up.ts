@@ -1,87 +1,81 @@
-import { CharRange } from "../typings";
-import { TopDownPhraseNode, TopDownTree } from "./top-down";
-import { POSNode } from "./typings";
+import { CharRange } from '../typings'
+import { TopDownPhraseNode, TopDownTree } from './top-down'
+import { POSNode } from './typings'
 
 export type BottomUpWordNode = CharRange & {
-  type: "word";
-  floor: number;
-  text: string;
-  parent: BottomUpPhraseNode | undefined;
-};
+  type: 'word'
+  floor: number
+  text: string
+  parent: BottomUpPhraseNode | undefined
+}
 export type BottomUpPhraseNode = CharRange & {
-  type: "phrase";
-  floor: number;
-  posTag: POSNode;
-  parent: BottomUpPhraseNode | undefined;
-};
-export type BottomUpTree = BottomUpWordNode[];
+  type: 'phrase'
+  floor: number
+  posTag: POSNode
+  parent: BottomUpPhraseNode | undefined
+}
+export type BottomUpTree = BottomUpWordNode[]
 
-type BottomUpTreeState = { leafs: BottomUpWordNode[] };
+type BottomUpTreeState = { leafs: BottomUpWordNode[] }
 
 const reversePhrase = (
   state: BottomUpTreeState,
-  tdnode: TopDownPhraseNode
+  tdnode: TopDownPhraseNode,
 ): {
-  state: BottomUpTreeState;
-  node: BottomUpPhraseNode;
+  state: BottomUpTreeState
+  node: BottomUpPhraseNode
 } => {
   const reversed: BottomUpPhraseNode = {
     start: tdnode.start,
     end: tdnode.end,
-    type: "phrase",
+    type: 'phrase',
     posTag: tdnode.posTag,
     floor: -1,
     parent: undefined,
-  };
+  }
 
-  const newState: BottomUpTreeState = { leafs: [...state.leafs] };
+  const newState: BottomUpTreeState = { leafs: [...state.leafs] }
   for (const tdchild of tdnode.children) {
-    if (tdchild.type === "word") {
+    if (tdchild.type === 'word') {
       const reversedChild: BottomUpWordNode = {
         start: tdchild.start,
         end: tdchild.end,
-        type: "word",
+        type: 'word',
         text: tdchild.text,
         floor: 0,
         parent: reversed,
-      };
+      }
 
-      reversed.floor = Math.max(reversed.floor, 1);
-      newState.leafs.push(reversedChild);
+      reversed.floor = Math.max(reversed.floor, 1)
+      newState.leafs.push(reversedChild)
     } else {
-      const { node: reversedChild, state: childState } = reversePhrase(
-        state,
-        tdchild
-      );
-      reversedChild.parent = reversed;
-      reversed.floor = Math.max(reversed.floor, reversedChild.floor + 1);
-      newState.leafs.push(...childState.leafs);
+      const { node: reversedChild, state: childState } = reversePhrase(state, tdchild)
+      reversedChild.parent = reversed
+      reversed.floor = Math.max(reversed.floor, reversedChild.floor + 1)
+      newState.leafs.push(...childState.leafs)
     }
   }
-  return { node: reversed, state: newState };
-};
+  return { node: reversed, state: newState }
+}
 
 export const reverseTree = (tree: TopDownTree): BottomUpTree => {
-  const state: BottomUpTreeState = { leafs: [] };
+  const state: BottomUpTreeState = { leafs: [] }
   for (const tdnode of tree) {
-    if (tdnode.type === "word") {
+    if (tdnode.type === 'word') {
       const reversedChild: BottomUpWordNode = {
         start: tdnode.start,
         end: tdnode.end,
-        type: "word",
+        type: 'word',
         text: tdnode.text,
         floor: 0,
         parent: undefined,
-      };
-      state.leafs.push(reversedChild);
+      }
+      state.leafs.push(reversedChild)
     } else {
-      const { node: reversedChild, state: childState } = reversePhrase(
-        state,
-        tdnode
-      );
-      reversedChild.parent = undefined;
-      state.leafs.push(...childState.leafs);
+      const { node: reversedChild, state: childState } = reversePhrase(state, tdnode)
+      reversedChild.parent = undefined
+      state.leafs.push(...childState.leafs)
     }
   }
-  return state.leafs;
-};
+  return state.leafs
+}

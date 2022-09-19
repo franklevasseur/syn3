@@ -1,3 +1,3 @@
-import { CharRange } from "../typings";
+import { CharRange } from '../typings'
 
-export type POSNode = CharRange & { text: string };
+export type POSNode = CharRange & { text: string }

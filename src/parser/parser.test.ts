@@ -1,9 +1,9 @@
-import { TreeParsingError } from "./errors";
+import { TreeParsingError } from './errors'
 
 const expectError = (fn: () => void, err: TreeParsingError) => {
   try {
-    fn();
+    fn()
   } catch (e) {
-    expect(e).toEqual(err);
+    expect(e).toEqual(err)
   }
-};
+}

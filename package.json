@@ -2,16 +2,16 @@
   "name": "arbresyntaxe",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://franklevasseur.github.io/syn3",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/franklevasseur/syn3"
+  },
   "dependencies": {
     "@blueprintjs/popover2": "^1.6.6",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
-    "@types/draft-js": "^0.11.9",
-    "@types/jest": "^27.5.2",
-    "@types/node": "^16.11.57",
-    "@types/react": "^18.0.18",
-    "@types/react-dom": "^18.0.6",
     "draft-js": "^0.11.7",
     "lodash": "^4.17.21",
     "react": "^18.2.0",
@@ -21,11 +21,39 @@
     "typescript": "^4.8.2",
     "web-vitals": "^2.1.4"
   },
+  "devDependencies": {
+    "@types/lodash": "^4.14.184",
+    "gh-pages": "^4.0.0",
+    "@types/draft-js": "^0.11.9",
+    "@types/jest": "^27.5.2",
+    "@types/node": "^16.11.57",
+    "@types/react": "^18.0.18",
+    "@types/react-dom": "^18.0.6",
+    "@typescript-eslint/eslint-plugin": "^5.37.0",
+    "@typescript-eslint/parser": "^5.37.0",
+    "cross-env": "^7.0.3",
+    "eslint": "^8.23.1",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-jsdoc": "^39.3.6",
+    "jest": "^24.9.0",
+    "prettier": "^2.7.1",
+    "ts-node": "^10.9.1",
+    "ts-node-dev": "^2.0.0"
+  },
   "scripts": {
+    "predeploy": "react-scripts build",
+    "deploy": "gh-pages -d build",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "prettier": "cross-env prettier --check './src/**/*.ts' '!**/*.d.ts'",
+    "prettier:fix": "cross-env prettier --write './src/**/*.ts' '!**/*.d.ts'",
+    "eslint": "cross-env eslint src/ --ext .ts",
+    "eslint:fix": "cross-env eslint --fix src/ --ext .ts",
+    "lint": "cross-env yarn prettier && yarn eslint",
+    "format": "cross-env yarn prettier:fix && yarn eslint:fix"
   },
   "eslintConfig": {
     "extends": [
@@ -44,8 +72,5 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  },
-  "devDependencies": {
-    "@types/lodash": "^4.14.184"
   }
 }

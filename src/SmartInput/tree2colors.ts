@@ -1,74 +1,68 @@
-import _ from "lodash";
-import { tree } from "../parser";
+import _ from 'lodash'
+import { tree } from '../parser'
 
 type ColorsState = {
-  coloredNodes: tree.bottomup.BottomUpPhraseNode[];
-  colors: ColoredText[];
-};
+  coloredNodes: tree.bottomup.BottomUpPhraseNode[]
+  colors: ColoredText[]
+}
 
 type ColoredText = {
-  start: number;
-  end: number;
-  color: number | undefined;
-};
+  start: number
+  end: number
+  color: number | undefined
+}
 
-const phraseToColor = (
-  state: ColorsState,
-  t: tree.bottomup.BottomUpPhraseNode
-): ColorsState => {
+const phraseToColor = (state: ColorsState, t: tree.bottomup.BottomUpPhraseNode): ColorsState => {
   if (state.coloredNodes.includes(t)) {
-    return state;
+    return state
   }
 
-  let opening: ColoredText = {
+  const opening: ColoredText = {
     start: t.start,
     end: t.start + 1,
     color: t.floor,
-  };
-  let closing: ColoredText = { start: t.end - 1, end: t.end, color: t.floor };
-  let pos: ColoredText = {
+  }
+  const closing: ColoredText = { start: t.end - 1, end: t.end, color: t.floor }
+  const pos: ColoredText = {
     start: t.posTag.start,
     end: t.posTag.end,
     color: t.floor,
-  };
+  }
 
   let newState: ColorsState = {
     coloredNodes: [...state.coloredNodes, t],
     colors: [...state.colors, opening, closing, pos],
-  };
-  if (t.parent) {
-    newState = phraseToColor(newState, t.parent);
   }
-  return newState;
-};
+  if (t.parent) {
+    newState = phraseToColor(newState, t.parent)
+  }
+  return newState
+}
 
-export const treeToColor = (
-  t: tree.bottomup.BottomUpTree,
-  code: string
-): ColoredText[] => {
-  let state: ColorsState = { coloredNodes: [], colors: [] };
+export const treeToColor = (t: tree.bottomup.BottomUpTree, code: string): ColoredText[] => {
+  let state: ColorsState = { coloredNodes: [], colors: [] }
 
   for (const w of t) {
     if (!w.parent) {
-      continue;
+      continue
     }
-    state = phraseToColor(state, w.parent);
+    state = phraseToColor(state, w.parent)
   }
 
-  const coloredTokens = _.sortBy(state.colors, (c) => c.start);
+  const coloredTokens = _.sortBy(state.colors, (c) => c.start)
 
-  const allTokens: ColoredText[] = [];
-  let cursor = 0;
+  const allTokens: ColoredText[] = []
+  let cursor = 0
   for (const c of coloredTokens) {
     if (c.start > cursor) {
       allTokens.push({
         start: cursor,
         end: c.start,
         color: undefined,
-      });
+      })
     }
-    allTokens.push(c);
-    cursor = c.end;
+    allTokens.push(c)
+    cursor = c.end
   }
 
   if (cursor < code.length) {
@@ -76,8 +70,8 @@ export const treeToColor = (
       start: cursor,
       end: code.length,
       color: undefined,
-    });
+    })
   }
 
-  return allTokens;
-};
+  return allTokens
+}
