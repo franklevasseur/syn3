@@ -6,32 +6,30 @@
   border-radius: 5px;
 }
 
-.node__root > circle {
-  fill: gray;
-  r: 3px;
-}
-
-.node__root > .rd3t-label {
-  transform: translate(-3%, -2%);
-  font-size: 1.25rem;
+.node__branch {
+  cursor: default;
 }
 
 .node__branch > circle {
   fill: gray;
   r: 3px;
+  cursor: default;
 }
 
-.node__branch > .rd3t-label {
-  transform: translate(-3%, -2%);
-  font-size: 1.25rem;
+.node__branch .node__label {
+  font-size: 1.5rem;
+}
+
+.node__leaf {
+  cursor: default;
 }
 
 .node__leaf > circle {
   fill: gray;
   r: 3px;
+  cursor: default;
 }
 
-.node__leaf > .rd3t-label {
-  transform: translate(-3%, 5%);
-  font-size: 1.25rem;
+.node__leaf .node__label {
+  font-size: 1.5rem;
 }
