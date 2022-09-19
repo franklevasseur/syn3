@@ -1,34 +1,35 @@
 #treeWrapper {
   width: 100%;
-  height: 75vh;
+  height: 80vh;
   border: solid 1px;
   background: #f1f1f1;
   border-radius: 5px;
 }
 
-.node__root > circle {
-  fill: gray;
-  r: 3px;
-}
-
-.node__root > .rd3t-label {
-    transform: translate(-3%, -2%);
+.node__branch {
+  cursor: default;
 }
 
 .node__branch > circle {
   fill: gray;
   r: 3px;
+  cursor: default;
 }
 
-.node__branch > .rd3t-label {
-    transform: translate(-3%, -2%);
+.node__branch .node__label {
+  font-size: 1.5rem;
+}
+
+.node__leaf {
+  cursor: default;
 }
 
 .node__leaf > circle {
   fill: gray;
   r: 3px;
+  cursor: default;
 }
 
-.node__leaf > .rd3t-label {
-    transform: translate(-3%, 5%);
+.node__leaf .node__label {
+  font-size: 1.5rem;
 }
