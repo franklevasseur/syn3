@@ -35,9 +35,11 @@ export const SmartInput = (props: SmartInputProps) => {
     <div className={`editor-root ${parsingError ? "editor-error" : ""}`}>
       <draft.Editor
         editorState={editorState}
+        ariaMultiline={true}
         onChange={(newState) => {
           setEditorState(newState);
         }}
+        handleReturn={() => "handled"}
       />
     </div>
   );

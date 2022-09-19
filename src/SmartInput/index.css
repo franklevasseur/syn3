@@ -1,15 +1,21 @@
 .editor-root {
-    font-size: 1.5rem;
-    border-radius: 5px;
-    border: solid;
-    border-width: 1px;
-    text-align: left;
-    background: #f1f1f1;
-    padding: 0.25%;
-    margin-bottom: 1%;
+  font-size: 1.5rem;
+  border-radius: 5px;
+  border: solid;
+  border-width: 1px;
+  text-align: left;
+  background: #f1f1f1;
+  padding: 0.25%;
+  margin-bottom: 1%;
+  overflow-x: auto;
 }
 
 .editor-error {
-    border: red solid 1px;
-    background-color: #ffdbdb;
+  border: red solid 1px;
+  background-color: #ffdbdb;
+}
+
+.public-DraftStyleDefault-block {
+  overflow-x: auto;
+  white-space: pre;
 }
