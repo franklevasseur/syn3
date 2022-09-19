@@ -4,13 +4,28 @@ import { tree } from "./parser";
 import { SmartInput } from "./SmartInput";
 import { TreeView } from "./TreeView";
 
-const INITIAL_VALUE =
+const DEFAULT_INITIAL_VALUE =
   "[P [Sn [det mon] [nom chien]] [Sv [v mange] [Sn [det des] [n croquettes]] [Sprep [prep sans] [nom viande]] [Sadv [adv lentement]]]]";
 
-function App() {
+const getQueryText = (): string | null => {
+  const url = new URL(window.location.toString());
+  return url.searchParams.get("text");
+};
+
+const setQueryText = (text: string | null) => {
+  const url = new URL(window.location.toString());
+  if (text !== null) {
+    url.searchParams.set("text", text || "");
+  }
+  window.history.pushState({}, "", url.toString());
+};
+
+const App = () => {
   const [tree, setTree] = useState<tree.topdown.TopDownTree | undefined>(
     undefined
   );
+
+  const initialValue = getQueryText() || DEFAULT_INITIAL_VALUE;
 
   return (
     <div className="App">
@@ -19,20 +34,22 @@ function App() {
       </div>
       <div className="editor-box">
         <SmartInput
-          initialValue={INITIAL_VALUE}
-          onChange={(tree) => {
+          initialValue={initialValue}
+          onChange={({ tree }) => {
             if (tree.type === "parse") {
               setTree(tree.topDown);
             }
             if (tree.type === "error") {
               setTree(undefined);
             }
+
+            setQueryText(tree.text);
           }}
         />
         {tree && <TreeView tree={tree} />}
       </div>
     </div>
   );
-}
+};
 
 export default App;

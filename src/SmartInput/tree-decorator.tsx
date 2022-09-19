@@ -21,11 +21,12 @@ type ComponentProps = {
 };
 
 export type TreeEvent =
-  | { type: "error"; err: TreeParsingError }
+  | { type: "error"; err: TreeParsingError; text: string }
   | {
       type: "parse";
       bottomUp: tree.bottomup.BottomUpTree;
       topDown: tree.topdown.TopDownTree;
+      text: string;
     };
 export type TreeListener = (e: TreeEvent) => void;
 
@@ -86,7 +87,7 @@ export class TreeDecorator implements draft.DraftDecoratorType {
     const text = block.getText();
     try {
       const { bottomUpTree: bottomUp, topDownTree: topDown } = parse(text);
-      this._emitEvent({ type: "parse", bottomUp, topDown });
+      this._emitEvent({ type: "parse", bottomUp, topDown, text });
       const colors = treeToColor(bottomUp, text);
       for (const span of colors) {
         if (span.color === undefined) {
@@ -97,7 +98,7 @@ export class TreeDecorator implements draft.DraftDecoratorType {
     } catch (thrown) {
       const err = thrown instanceof Error ? thrown : new Error(`${thrown}`);
       if (err instanceof TreeParsingError) {
-        this._emitEvent({ type: "error", err });
+        this._emitEvent({ type: "error", err, text });
         callback(err.range.start, err.range.end, {
           type: "error",
           message: err.message,
