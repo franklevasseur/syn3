@@ -1,12 +1,19 @@
 import './TreeView.css'
 import { useState } from 'react'
 import Tree from 'react-d3-tree'
-import { CustomNodeElementProps, RawNodeDatum } from 'react-d3-tree/lib/types/common'
+import { CustomNodeElementProps, Orientation, RawNodeDatum, TreeLinkDatum } from 'react-d3-tree/lib/types/common'
 import { tree } from './parser'
 
 type TreeViewProps = {
   tree: tree.topdown.TopDownTree
 }
+
+const POS_DELTA_Y = -40
+const LEAF_UNIQ_DELTA_Y = -135
+const LEAF_SIBLINGS_DELTA_Y = 0
+const NODE_X = (text: string) => -text.length * 6
+const NODE_WIDTH = (text: string) => text.length * 20
+const NODE_HEIGHT = 150
 
 const toD3Node = (node: tree.topdown.TopDownTreeNode): RawNodeDatum => {
   if (node.type === 'word') {
@@ -25,14 +32,22 @@ const toD3Tree = (tree: tree.topdown.TopDownTree): RawNodeDatum[] => {
   return tree.map(toD3Node)
 }
 
-const renderForeignObjectNode = ({ nodeDatum }: CustomNodeElementProps) => {
+const renderNode = ({ nodeDatum, hierarchyPointNode }: CustomNodeElementProps) => {
   const isLeaf = !nodeDatum.children?.length
+  const sibblings = hierarchyPointNode.parent?.children ?? []
 
-  const x = -nodeDatum.name.length * 6
-  const y = isLeaf ? 5 : -40
+  const x = NODE_X(nodeDatum.name)
+  let y: number
+  if (!isLeaf) {
+    y = POS_DELTA_Y
+  } else if (sibblings.length > 1) {
+    y = LEAF_SIBLINGS_DELTA_Y
+  } else {
+    y = LEAF_UNIQ_DELTA_Y
+  }
 
-  const width = nodeDatum.name.length * 20
-  const height = 150
+  const width = NODE_WIDTH(nodeDatum.name)
+  const height = NODE_HEIGHT
 
   const svgProps: React.SVGProps<SVGForeignObjectElement> = {
     x,
@@ -41,13 +56,32 @@ const renderForeignObjectNode = ({ nodeDatum }: CustomNodeElementProps) => {
     height,
   }
 
-  const className = isLeaf ? 'node__leaf' : 'node__branch'
   return (
-    <g className={className}>
-      <circle></circle>
+    <g className="node">
+      {!isLeaf && <circle></circle>}
       <foreignObject {...svgProps}>{<div className="node__label">{nodeDatum.name}</div>}</foreignObject>
     </g>
   )
+}
+
+const funcPath = (linkDatum: TreeLinkDatum, orientation: Orientation) => {
+  const { source, target } = linkDatum
+  const isLeaf = !target.children?.length
+  const deltaY = isLeaf ? LEAF_SIBLINGS_DELTA_Y : 0
+  return orientation === 'horizontal'
+    ? `M${source.y},${source.x}L${target.y},${target.x}`
+    : `M${source.x},${source.y}L${target.x},${target.y + deltaY}`
+}
+
+const linkClass = ({ source, target }: TreeLinkDatum, orientation: Orientation): string => {
+  const isLeaf = !target.children?.length
+  if (!isLeaf) {
+    return ''
+  }
+
+  const siblings = source.children ?? []
+  const onlyChild = siblings.length <= 1
+  return onlyChild ? 'no_link' : 'leaf_link'
 }
 
 export const TreeView = (props: TreeViewProps) => {
@@ -58,7 +92,6 @@ export const TreeView = (props: TreeViewProps) => {
       <Tree
         data={toD3Tree(props.tree)}
         orientation="vertical"
-        pathFunc="straight"
         collapsible={false}
         translate={{ x: width / 2, y: height / 8 }}
         zoom={0.75}
@@ -66,7 +99,9 @@ export const TreeView = (props: TreeViewProps) => {
         branchNodeClassName="node__branch"
         leafNodeClassName="node__leaf"
         separation={{ siblings: 1, nonSiblings: 1 }}
-        renderCustomNodeElement={(rd3tProps: CustomNodeElementProps) => renderForeignObjectNode({ ...rd3tProps })}
+        renderCustomNodeElement={renderNode}
+        pathFunc={funcPath}
+        pathClassFunc={linkClass}
       />
     </div>
   )
