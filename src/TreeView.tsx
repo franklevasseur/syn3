@@ -29,7 +29,7 @@ const renderForeignObjectNode = ({ nodeDatum }: CustomNodeElementProps) => {
   const isLeaf = !nodeDatum.children?.length
 
   const x = -nodeDatum.name.length * 6
-  const y = isLeaf ? 5 : -40
+  const y = isLeaf ? -140 : -40
 
   const width = nodeDatum.name.length * 20
   const height = 150
@@ -41,10 +41,9 @@ const renderForeignObjectNode = ({ nodeDatum }: CustomNodeElementProps) => {
     height,
   }
 
-  const className = isLeaf ? 'node__leaf' : 'node__branch'
   return (
-    <g className={className}>
-      <circle></circle>
+    <g className="node">
+      {!isLeaf && <circle></circle>}
       <foreignObject {...svgProps}>{<div className="node__label">{nodeDatum.name}</div>}</foreignObject>
     </g>
   )
@@ -67,6 +66,10 @@ export const TreeView = (props: TreeViewProps) => {
         leafNodeClassName="node__leaf"
         separation={{ siblings: 1, nonSiblings: 1 }}
         renderCustomNodeElement={(rd3tProps: CustomNodeElementProps) => renderForeignObjectNode({ ...rd3tProps })}
+        pathClassFunc={({ target }, orientation) => {
+          const isLeaf = !target.children?.length
+          return isLeaf ? 'no_link' : ''
+        }}
       />
     </div>
   )
