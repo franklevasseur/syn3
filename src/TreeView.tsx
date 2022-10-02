@@ -15,6 +15,15 @@ const toD3Node = (node: tree.topdown.TopDownTreeNode): RawNodeDatum => {
     }
   }
 
+  if (node.children.length === 1 && node.children[0].type === 'word') {
+    return {
+      name: node.posTag.text,
+      attributes: {
+        word: node.children[0].text,
+      },
+    }
+  }
+
   return {
     name: node.posTag.text,
     children: node.children.map(toD3Node),
@@ -26,26 +35,49 @@ const toD3Tree = (tree: tree.topdown.TopDownTree): RawNodeDatum[] => {
 }
 
 const renderForeignObjectNode = ({ nodeDatum }: CustomNodeElementProps) => {
-  const isLeaf = !nodeDatum.children?.length
+  let word = nodeDatum.attributes?.word
 
-  const x = -nodeDatum.name.length * 6
-  const y = isLeaf ? 5 : -40
+  const posX = -nodeDatum.name.length * 6
+  const posY = -40
 
-  const width = nodeDatum.name.length * 20
-  const height = 150
+  const posWidth = nodeDatum.name.length * 20
+  const posHeight = 150
 
-  const svgProps: React.SVGProps<SVGForeignObjectElement> = {
-    x,
-    y,
-    width,
-    height,
+  const posSvgProps: React.SVGProps<SVGForeignObjectElement> = {
+    x: posX,
+    y: posY,
+    width: posWidth,
+    height: posHeight,
   }
 
-  const className = isLeaf ? 'node__leaf' : 'node__branch'
+  if (word) {
+    word = `${word}`
+    const wordX = -word.length * 6
+    const wordY = 5
+
+    const wordWidth = word.length * 20
+    const wordHeight = 150
+
+    const wordSvgProps: React.SVGProps<SVGForeignObjectElement> = {
+      x: wordX,
+      y: wordY,
+      width: wordWidth,
+      height: wordHeight,
+    }
+
+    return (
+      <g className="node">
+        <circle></circle>
+        <foreignObject {...posSvgProps}>{<div className="node__label">{nodeDatum.name}</div>}</foreignObject>
+        <foreignObject {...wordSvgProps}>{<div className="node__label">{word}</div>}</foreignObject>
+      </g>
+    )
+  }
+
   return (
-    <g className={className}>
+    <g className="node">
       <circle></circle>
-      <foreignObject {...svgProps}>{<div className="node__label">{nodeDatum.name}</div>}</foreignObject>
+      <foreignObject {...posSvgProps}>{<div className="node__label">{nodeDatum.name}</div>}</foreignObject>
     </g>
   )
 }
@@ -67,6 +99,10 @@ export const TreeView = (props: TreeViewProps) => {
         leafNodeClassName="node__leaf"
         separation={{ siblings: 1, nonSiblings: 1 }}
         renderCustomNodeElement={(rd3tProps: CustomNodeElementProps) => renderForeignObjectNode({ ...rd3tProps })}
+        pathClassFunc={(link, orientation) => {
+          console.log('pathClassFunc!')
+          return ''
+        }}
       />
     </div>
   )

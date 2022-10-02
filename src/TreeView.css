@@ -6,30 +6,16 @@
   border-radius: 5px;
 }
 
-.node__branch {
+.node {
   cursor: default;
 }
 
-.node__branch > circle {
+.node > circle {
   fill: gray;
   r: 3px;
   cursor: default;
 }
 
-.node__branch .node__label {
-  font-size: 1.5rem;
-}
-
-.node__leaf {
-  cursor: default;
-}
-
-.node__leaf > circle {
-  fill: gray;
-  r: 3px;
-  cursor: default;
-}
-
-.node__leaf .node__label {
+.node .node__label {
   font-size: 1.5rem;
 }
