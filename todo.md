@@ -7,3 +7,5 @@
 - [ ] FEAT : Color tree nodes and branches with the same color as the corresponding bracket
 - [ ] FEAT : Allow multiline input (requires refactor of draftjs editor)
 - [ ] FEAT : Allow multiple roots in UI
+- [ ] FEAT : Allow cpy tree as SVG
+- [ ] FEAT : Display few special characters like phi and whitespace
