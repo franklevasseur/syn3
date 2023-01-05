@@ -4,7 +4,7 @@ import * as draft from 'draft-js'
 import * as Immutable from 'immutable'
 import { parse, tree } from '../parser'
 import { TreeParsingError } from '../parser/errors'
-import { treeToColor } from './tree2colors'
+import { highlightSyntax } from './syntax-highlight'
 
 const KEY_SEPARATOR = '▁'
 
@@ -73,16 +73,17 @@ export class TreeDecorator implements draft.DraftDecoratorType {
 
   private _strategy = (block: draft.ContentBlock, callback: (start: number, end: number, props: TreeProps) => void) => {
     const text = block.getText()
+    const colors = highlightSyntax(text)
+    for (const span of colors) {
+      if (span.color === undefined) {
+        continue
+      }
+      callback(span.start, span.end, { type: 'brackets', color: span.color })
+    }
+
     try {
       const { bottomUpTree: bottomUp, topDownTree: topDown } = parse(text)
       this._emitEvent({ type: 'parse', bottomUp, topDown, text })
-      const colors = treeToColor(bottomUp, text)
-      for (const span of colors) {
-        if (span.color === undefined) {
-          continue
-        }
-        callback(span.start, span.end, { type: 'brackets', color: span.color })
-      }
     } catch (thrown) {
       const err = thrown instanceof Error ? thrown : new Error(`${thrown}`)
       if (err instanceof TreeParsingError) {
