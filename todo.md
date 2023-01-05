@@ -11,6 +11,7 @@
 - [ ] CHORE : rewrite tokenizer for a better computational complexity
 - [ ] FEAT : Allow cpy tree as SVG
 - [ ] CHORE : Update dependencies
+- [ ] FEAT : Collect usage telemetry
 
 - [ ] FEAT : Allow multiline input (requires refactor of draftjs editor)
 - [ ] FEAT : Color tree nodes and branches with the same color as the corresponding bracket
