@@ -5,7 +5,7 @@ import { SmartInput } from './SmartInput'
 import { TreeView } from './TreeView'
 
 const DEFAULT_INITIAL_VALUE =
-  "[ST [SN Luc] [T' [T (présent,3sg)] [SV [V' [SN se] [V demande]] [SC [SP où] [C' [C ϕ] [ST [SN il] [T' [T (présent,3sg)] [SV [V' [V a mis] [SN [Det le] [N' [N chat.]]]]]]]]]]]]"
+  "[ST [SN Luc] [T' [T (présent,3sg)] [SV [V' [SN se] [V demande]] [SC [SP où] [C' [C :phi:] [ST [SN il] [T' [T (présent,3sg)] [SV [V' [V a mis] [SN [Det le] [N' [N chat.]]]]]]]]]]]]"
 
 const getQueryText = (): string | null => {
   const url = new URL(window.location.toString())

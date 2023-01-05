@@ -4,8 +4,9 @@
 - [x] FEAT : Use query params to store the input text
 - [x] CHORE/BUG : Syntax highlighting for braces should be independent of the syntax parser
 - [x] CHORE : merge bottomup and topdown trees into one
+- [x] FEAT : allow few special characters like phi and whitespace
+- [ ] FIX: allow escaped brackets in syntax highlighting
 - [ ] FIX : hide backslashes when they are used to escape a character
-- [ ] FEAT : allow few special characters like phi and whitespace
 - [ ] CHORE : rewrite tokenizer for a better computational complexity
 - [ ] FEAT : Allow cpy tree as SVG
 - [ ] FEAT : Allow multiline input (requires refactor of draftjs editor)

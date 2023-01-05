@@ -8,6 +8,11 @@ type TreeViewProps = {
   tree: tree.Tree
 }
 
+type RenderHook = {
+  pattern: RegExp
+  render: string
+}
+
 const POS_DELTA_Y = -40
 const LEAF_UNIQ_DELTA_Y = -135
 const LEAF_SIBLINGS_DELTA_Y = 0
@@ -15,15 +20,24 @@ const NODE_X = (text: string) => -text.length * 6
 const NODE_WIDTH = (text: string) => text.length * 20
 const NODE_HEIGHT = 150
 
+const PHI: RenderHook = { pattern: /:phi:/g, render: 'ϕ' }
+const WHITE_SPACE: RenderHook = { pattern: /:white:/g, render: ' ' }
+
+const renderHooks: RenderHook[] = [PHI, WHITE_SPACE]
+const renderText = (text: string) =>
+  renderHooks.reduce((acc, hook) => {
+    return acc.replace(hook.pattern, hook.render)
+  }, text)
+
 const toD3Node = (node: tree.TreeNode): RawNodeDatum => {
   if (node.type === 'word') {
     return {
-      name: node.text,
+      name: renderText(node.text),
     }
   }
 
   return {
-    name: node.posTag.text,
+    name: renderText(node.posTag.text),
     children: node.children.map(toD3Node),
   }
 }
