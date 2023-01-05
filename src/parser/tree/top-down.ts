@@ -1,5 +1,5 @@
+import { Stack } from '../../stack'
 import { TreeParsingError } from '../errors'
-import { Stack } from '../stack'
 import { Token } from '../tokenizer'
 import { CharRange } from '../typings'
 import { POSNode } from './typings'
