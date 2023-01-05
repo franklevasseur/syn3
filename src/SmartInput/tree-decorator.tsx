@@ -23,8 +23,7 @@ export type TreeEvent =
   | { type: 'error'; err: TreeParsingError; text: string }
   | {
       type: 'parse'
-      bottomUp: tree.bottomup.BottomUpTree
-      topDown: tree.topdown.TopDownTree
+      tree: tree.Tree
       text: string
     }
 export type TreeListener = (e: TreeEvent) => void
@@ -82,8 +81,8 @@ export class TreeDecorator implements draft.DraftDecoratorType {
     }
 
     try {
-      const { bottomUpTree: bottomUp, topDownTree: topDown } = parse(text)
-      this._emitEvent({ type: 'parse', bottomUp, topDown, text })
+      const { tree } = parse(text)
+      this._emitEvent({ type: 'parse', tree, text })
     } catch (thrown) {
       const err = thrown instanceof Error ? thrown : new Error(`${thrown}`)
       if (err instanceof TreeParsingError) {

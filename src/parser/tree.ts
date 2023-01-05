@@ -1,24 +1,23 @@
-import { Stack } from '../../stack'
-import { TreeParsingError } from '../errors'
-import { Token } from '../tokenizer'
-import { CharRange } from '../typings'
-import { POSNode } from './typings'
+import { Stack } from '../stack'
+import { TreeParsingError } from './errors'
+import { Token } from './tokenizer'
+import { CharRange, POSNode } from './typings'
 
-export type TopDownWordNode = CharRange & {
+export type WordNode = CharRange & {
   type: 'word'
   depth: number
   text: string
 }
-export type TopDownPhraseNode = CharRange & {
+export type PhraseNode = CharRange & {
   type: 'phrase'
   depth: number
   posTag: POSNode
-  children: TopDownTreeNode[]
+  children: TreeNode[]
 }
-export type TopDownTreeNode = TopDownWordNode | TopDownPhraseNode
-export type TopDownTree = TopDownTreeNode[]
+export type TreeNode = WordNode | PhraseNode
+export type Tree = TreeNode[]
 
-const EMPTY_TOP_DOWN_PHRASE = (): TopDownPhraseNode => ({
+const EMPTY_PHRASE = (): PhraseNode => ({
   type: 'phrase',
   posTag: { text: 'NONE', start: -1, end: -1 },
   depth: -1,
@@ -27,13 +26,13 @@ const EMPTY_TOP_DOWN_PHRASE = (): TopDownPhraseNode => ({
   children: [],
 })
 
-type TopDownTreeState = 'OPENING' | 'POS_TAG' | 'WORDS' | 'CLOSING'
-export const buildTopDownTree = (tokens: Token[]): TopDownTree => {
-  const root: TopDownPhraseNode = EMPTY_TOP_DOWN_PHRASE()
-  const stack = new Stack<TopDownPhraseNode>()
+type TreeState = 'OPENING' | 'POS_TAG' | 'WORDS' | 'CLOSING'
+export const buildTree = (tokens: Token[]): Tree => {
+  const root: PhraseNode = EMPTY_PHRASE()
+  const stack = new Stack<PhraseNode>()
   stack.push(root)
 
-  let state: TopDownTreeState = 'CLOSING'
+  let state: TreeState = 'CLOSING'
   for (const token of tokens) {
     if (state === 'OPENING') {
       if (token.type !== 'text') {
@@ -52,7 +51,7 @@ export const buildTopDownTree = (tokens: Token[]): TopDownTree => {
       }
 
       if (token.type === 'opening-bracket') {
-        const next = EMPTY_TOP_DOWN_PHRASE()
+        const next = EMPTY_PHRASE()
         next.start = token.start
         next.depth = stack.length - 1
         stack.push(next)
@@ -77,7 +76,7 @@ export const buildTopDownTree = (tokens: Token[]): TopDownTree => {
     // state === "WORDS" || state === "CLOSING"
 
     if (token.type === 'opening-bracket') {
-      const next = EMPTY_TOP_DOWN_PHRASE()
+      const next = EMPTY_PHRASE()
       next.start = token.start
       next.depth = stack.length - 1
       stack.push(next)
