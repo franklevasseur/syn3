@@ -5,7 +5,7 @@ import { CustomNodeElementProps, Orientation, RawNodeDatum, TreeLinkDatum } from
 import { tree } from './parser'
 
 type TreeViewProps = {
-  tree: tree.topdown.TopDownTree
+  tree: tree.Tree
 }
 
 const POS_DELTA_Y = -40
@@ -15,7 +15,7 @@ const NODE_X = (text: string) => -text.length * 6
 const NODE_WIDTH = (text: string) => text.length * 20
 const NODE_HEIGHT = 150
 
-const toD3Node = (node: tree.topdown.TopDownTreeNode): RawNodeDatum => {
+const toD3Node = (node: tree.TreeNode): RawNodeDatum => {
   if (node.type === 'word') {
     return {
       name: node.text,
@@ -28,7 +28,7 @@ const toD3Node = (node: tree.topdown.TopDownTreeNode): RawNodeDatum => {
   }
 }
 
-const toD3Tree = (tree: tree.topdown.TopDownTree): RawNodeDatum[] => {
+const toD3Tree = (tree: tree.Tree): RawNodeDatum[] => {
   return tree.map(toD3Node)
 }
 

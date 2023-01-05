@@ -21,7 +21,7 @@ const setQueryText = (text: string | null) => {
 }
 
 const App = () => {
-  const [tree, setTree] = useState<tree.topdown.TopDownTree | undefined>(undefined)
+  const [tree, setTree] = useState<tree.Tree | undefined>(undefined)
 
   const initialValue = getQueryText() || DEFAULT_INITIAL_VALUE
 
@@ -35,7 +35,7 @@ const App = () => {
           initialValue={initialValue}
           onChange={({ tree }) => {
             if (tree.type === 'parse') {
-              setTree(tree.topDown)
+              setTree(tree.tree)
             }
             if (tree.type === 'error') {
               setTree(undefined)
