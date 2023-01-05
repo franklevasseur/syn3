@@ -5,10 +5,13 @@
 - [x] CHORE/BUG : Syntax highlighting for braces should be independent of the syntax parser
 - [x] CHORE : merge bottomup and topdown trees into one
 - [x] FEAT : allow few special characters like phi and whitespace
-- [ ] FIX: allow escaped brackets in syntax highlighting
-- [ ] FIX : hide backslashes when they are used to escape a character
+- [x] FIX: allow escaped brackets in syntax highlighting
+- [x] FIX : hide backslashes when they are used to escape a bracket
+
 - [ ] CHORE : rewrite tokenizer for a better computational complexity
 - [ ] FEAT : Allow cpy tree as SVG
+- [ ] CHORE : Update dependencies
+
 - [ ] FEAT : Allow multiline input (requires refactor of draftjs editor)
 - [ ] FEAT : Color tree nodes and branches with the same color as the corresponding bracket
 - [ ] FEAT : Allow multiple roots in UI

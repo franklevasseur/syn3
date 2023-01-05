@@ -11,6 +11,8 @@ type StackElement = {
   color: number
 }
 
+const ESCAPED_OPENING = /^\\\[/
+const ESCAPED_CLOSING = /^\\\]/
 const OPENING = /^\[[^\s]*/
 const CLOSING = /^\]/
 
@@ -24,6 +26,10 @@ export const highlightSyntax = (text: string): ColoredText[] => {
 
   for (let i = 0; i < text.length; ) {
     const remaining = text.slice(i)
+    if (ESCAPED_OPENING.test(remaining) || ESCAPED_CLOSING.test(remaining)) {
+      i += 2
+      continue
+    }
 
     const openingMatch = OPENING.exec(remaining)
     if (openingMatch) {

@@ -20,10 +20,12 @@ const NODE_X = (text: string) => -text.length * 6
 const NODE_WIDTH = (text: string) => text.length * 20
 const NODE_HEIGHT = 150
 
+const ESCAPED_OPEN_BRACKET: RenderHook = { pattern: /\\\[/g, render: '[' }
+const ESCAPED_CLOSE_BRACKET: RenderHook = { pattern: /\\\]/g, render: ']' }
 const PHI: RenderHook = { pattern: /:phi:/g, render: 'ϕ' }
 const WHITE_SPACE: RenderHook = { pattern: /:white:/g, render: ' ' }
 
-const renderHooks: RenderHook[] = [PHI, WHITE_SPACE]
+const renderHooks: RenderHook[] = [ESCAPED_OPEN_BRACKET, ESCAPED_CLOSE_BRACKET, PHI, WHITE_SPACE]
 const renderText = (text: string) =>
   renderHooks.reduce((acc, hook) => {
     return acc.replace(hook.pattern, hook.render)
