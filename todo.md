@@ -7,12 +7,11 @@
 - [x] FEAT : allow few special characters like phi and whitespace
 - [x] FIX: allow escaped brackets in syntax highlighting
 - [x] FIX : hide backslashes when they are used to escape a bracket
-
-- [ ] CHORE : rewrite tokenizer for a better computational complexity
-- [ ] FEAT : Allow cpy tree as SVG
 - [ ] CHORE : Update dependencies
 - [ ] FEAT : Collect usage telemetry
-
+- [ ] CHORE : rewrite tokenizer for a better computational complexity
+- [ ] FEAT: Find scale a translation than ensures tree is all visible
+- [ ] FEAT : Allow cpy tree as PNG
 - [ ] FEAT : Allow multiline input (requires refactor of draftjs editor)
 - [ ] FEAT : Color tree nodes and branches with the same color as the corresponding bracket
 - [ ] FEAT : Allow multiple roots in UI
