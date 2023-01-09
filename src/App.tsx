@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import './App.css'
+import ReactGA from 'react-ga4'
 import { tree } from './parser'
 import { SmartInput } from './SmartInput'
 import { TreeView } from './TreeView'
@@ -41,6 +42,10 @@ const App = () => {
               setTree(undefined)
             }
 
+            ReactGA.send({
+              hitType: 'event',
+              page: window.location.toString(),
+            })
             setQueryText(tree.text)
           }}
         />
