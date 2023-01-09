@@ -1,3 +1,4 @@
+import d3ToPng from 'd3-svg-to-png'
 import { useState } from 'react'
 import './App.css'
 import { tree } from './parser'
@@ -29,6 +30,13 @@ const App = () => {
     <div className="App">
       <div className="title-box">
         <div className="title-text">Syn3</div>
+        <button
+          onClick={async () => {
+            await d3ToPng('.rd3t-svg', 'syn3', { scale: 2 })
+          }}
+        >
+          LOL
+        </button>
       </div>
       <div className="editor-box">
         <SmartInput
