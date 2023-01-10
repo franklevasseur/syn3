@@ -7,6 +7,10 @@
   position: relative;
 }
 
+.screenshot {
+  animation: screenshot 1s;
+}
+
 .node {
   cursor: default;
 }
@@ -33,3 +37,12 @@
 /* .rd3t-g {
   outline: solid 1px blue;
 } */
+
+@keyframes screenshot {
+  0% {
+    background-color: #222;
+  }
+  100% {
+    background-color: #f1f1f1;
+  }
+}

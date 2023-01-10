@@ -5,11 +5,13 @@ import { MdCenterFocusStrong, MdOutlinePhotoCamera } from 'react-icons/md'
 
 type ToolBarProps = {
   resetView: () => void
+  capture: () => void
   treeSelector: string
 }
 
 export const ToolBar = (props: ToolBarProps) => {
   const copyImage = async () => {
+    props.capture()
     const imgUrl = await d3ToPng(props.treeSelector, 'syn3', { scale: 2, download: false })
     const imgBlob = await fetch(imgUrl).then((r) => r.blob())
     await navigator.clipboard.write([new ClipboardItem({ 'image/png': imgBlob })])

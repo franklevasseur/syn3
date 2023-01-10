@@ -148,6 +148,8 @@ export const TreeView = (props: TreeViewProps) => {
 
   const [initialRender, setInitialRender] = useState<boolean>(true)
 
+  const [screenshot, setScreenshot] = useState<boolean>(false)
+
   const scaling = (l1: number, l2: number) => (SPACING_FACTOR * l2) / l1
 
   const treePosition = getTreePosition()
@@ -176,6 +178,10 @@ export const TreeView = (props: TreeViewProps) => {
   return (
     <div
       id="treeWrapper"
+      className={screenshot ? 'screenshot' : ''}
+      onAnimationEnd={() => {
+        setScreenshot(false)
+      }}
       ref={(x) => {
         if (!x) {
           return
@@ -187,7 +193,13 @@ export const TreeView = (props: TreeViewProps) => {
         setBox(rect)
       }}
     >
-      <ToolBar resetView={props.reset} treeSelector={CANVAS_CLASS} />
+      <ToolBar
+        resetView={props.reset}
+        treeSelector={CANVAS_CLASS}
+        capture={() => {
+          setScreenshot(true)
+        }}
+      />
       <Tree
         data={toD3Tree(props.tree)}
         orientation="vertical"

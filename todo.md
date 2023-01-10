@@ -8,7 +8,9 @@
 - [x] FIX: allow escaped brackets in syntax highlighting
 - [x] FIX : hide backslashes when they are used to escape a bracket
 - [x] FEAT: Center tree on render
-- [ ] FEAT : Allow cpy tree as PNG
+- [x] FEAT : Allow cpy tree as PNG
+
+- [ ] FEAT : Small toaster to tell that the image is copied in clipboard
 - [ ] CHORE : Update dependencies
 - [ ] FEAT : Collect usage telemetry
 
