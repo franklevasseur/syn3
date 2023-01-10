@@ -1,9 +1,9 @@
-import './TreeView.css'
+import './index.css'
 import { useState } from 'react'
 import Tree from 'react-d3-tree'
 import { CustomNodeElementProps, Orientation, RawNodeDatum, TreeLinkDatum } from 'react-d3-tree/lib/types/common'
-import { MdCenterFocusStrong } from 'react-icons/md'
-import { tree } from './parser'
+import { tree } from '../parser'
+import { ToolBar } from './ToolBar'
 
 type TreeViewProps = {
   tree: tree.Tree
@@ -36,6 +36,11 @@ const LEAF_SIBLINGS_DELTA_Y = 0
 const NODE_X = (text: string) => -text.length * 6
 const NODE_WIDTH = (text: string) => text.length * 20
 const NODE_HEIGHT = 150
+
+const CANVAS_CLASS = '.rd3t-svg'
+const TREE_G_CLASS = '.rd3t-g'
+const ROOT_NODE_CLASS = '.node__root'
+const ROOT_NODE_CIRCLE_CLASS = `${ROOT_NODE_CLASS} circle`
 
 const ESCAPED_OPEN_BRACKET: RenderHook = { pattern: /\\\[/g, render: '[' }
 const ESCAPED_CLOSE_BRACKET: RenderHook = { pattern: /\\\]/g, render: ']' }
@@ -117,13 +122,16 @@ const linkClass = ({ source, target }: TreeLinkDatum, orientation: Orientation):
   return onlyChild ? 'no_link' : 'leaf_link'
 }
 
+const selectTreeSVG = () => document.querySelector<SVGSVGElement>(TREE_G_CLASS)
+const selectRootNodeCircle = () => document.querySelector<SVGCircleElement>(ROOT_NODE_CIRCLE_CLASS)
+
 const getTreePosition = (): TreePOsition | undefined => {
-  const fullTree = document.querySelector<SVGGElement>('.rd3t-g')
+  const fullTree = selectTreeSVG()
   if (!fullTree) {
     return
   }
 
-  const rootNode = document.querySelector<SVGCircleElement>('.node__root circle')
+  const rootNode = selectRootNodeCircle()
   if (!rootNode) {
     return
   }
@@ -179,12 +187,7 @@ export const TreeView = (props: TreeViewProps) => {
         setBox(rect)
       }}
     >
-      <div
-        style={{ position: 'absolute', right: '5px', top: '2px', border: 'solid 1px', borderRadius: '5px', cursor: 'pointer' }}
-        onClick={props.reset}
-      >
-        <MdCenterFocusStrong size={30} />
-      </div>
+      <ToolBar resetView={props.reset} treeSelector={CANVAS_CLASS} />
       <Tree
         data={toD3Tree(props.tree)}
         orientation="vertical"

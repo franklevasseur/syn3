@@ -4366,6 +4366,11 @@ d3-shape@^1.3.7:
   dependencies:
     d3-path "1"
 
+d3-svg-to-png@^0.2.1:
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/d3-svg-to-png/-/d3-svg-to-png-0.2.1.tgz#23aa216a6a611b5203943b2487be2768ce4cac88"
+  integrity sha512-QQLGVDZTJQQ/cKldqUdZ6Mgi5AwrEfwhP6UwQgmQmTm0vJajROeytySAM1nHvFEGyv3XyppGXmyiNrw7SdMEQw==
+
 d3-timer@1:
   version "1.0.10"
   resolved "https://registry.yarnpkg.com/d3-timer/-/d3-timer-1.0.10.tgz#dfe76b8a91748831b13b6d9c793ffbd508dd9de5"
