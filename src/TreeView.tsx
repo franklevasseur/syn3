@@ -20,12 +20,10 @@ type BoundingRect = {
   height: number
 }
 
-type RectState = [BoundingRect, (r: BoundingRect) => void]
-
 const EMPTY_RECT: BoundingRect = { x: 0, y: 0, width: 0, height: 0 }
 const rectEquals = (a: BoundingRect, b: BoundingRect) => a.x === b.x && a.y === b.y && a.width === b.width && a.height === b.height
 
-const SPACING_FACTOR = 0.85
+const SPACING_FACTOR = 0.9
 
 const POS_DELTA_Y = -40
 const LEAF_UNIQ_DELTA_Y = -135
@@ -114,61 +112,67 @@ const linkClass = ({ source, target }: TreeLinkDatum, orientation: Orientation):
   return onlyChild ? 'no_link' : 'leaf_link'
 }
 
-const querySvg = () => document.querySelector<SVGGElement>('.rd3t-g')
+const getSvgRectangles = () => {
+  const fullTree = document.querySelector<SVGGElement>('.rd3t-g')
+  if (!fullTree) {
+    return
+  }
+
+  const rootNode = document.querySelector<SVGGElement>('.node__root')
+  if (!rootNode) {
+    return
+  }
+
+  return { fullTree: fullTree.getBoundingClientRect(), rootNode: rootNode.getBoundingClientRect() }
+}
 
 export const TreeView = (props: TreeViewProps) => {
   const [boxRect, setBoxRect] = useState<BoundingRect>({ ...EMPTY_RECT })
-  const [svgRect, setSVGRect] = useState<BoundingRect>({ ...EMPTY_RECT })
   const [scale, setScale] = useState<number>(1)
   const [translation, setTranslation] = useState<{ x: number; y: number }>({ x: 0, y: 0 })
   const [initialRender, setInitialRender] = useState<boolean>(true)
 
   const { width: boxWidth, height: boxHeight } = boxRect
-  const { width: svgWidth, height: svgHeight } = svgRect
 
-  const maybeUpdateRect = <E extends Element>(x: E | null, state: RectState) => {
+  const maybeUpdateBox = (x: HTMLDivElement | null) => {
     if (!x) {
       return
     }
 
-    const [curr, setter] = state
     const rect = x.getBoundingClientRect()
-    if (rectEquals(rect, curr)) {
+    if (rectEquals(rect, boxRect)) {
       return
     }
 
-    setter(rect)
+    setBoxRect(rect)
   }
 
   const scaling = (l1: number, l2: number) => (SPACING_FACTOR * l2) / l1
-  const maybeUpdateScale = () => {
+  const svgRects = getSvgRectangles()
+  if (initialRender && svgRects) {
+    const { fullTree, rootNode } = svgRects
+    const { x: svgX, width: svgWidth, height: svgHeight } = fullTree
+    const { x: rootX } = rootNode
+
+    const currentScale = scale
     const widthScaling = scaling(svgWidth, boxWidth)
     const heightScaling = scaling(svgHeight, boxHeight)
-
-    if (svgWidth <= boxWidth && svgHeight <= boxHeight) {
-      return
+    const minScale = Math.min(widthScaling, heightScaling)
+    const newScale = Math.min(minScale, currentScale)
+    if (newScale !== currentScale) {
+      setScale(newScale)
     }
 
-    const newScale = Math.min(widthScaling, heightScaling)
-    if (newScale === scale) {
-      return
+    const x0 = rootX - svgX * minScale
+    const x = x0 + (boxWidth - svgWidth * minScale) / 2
+    const y = (boxHeight - svgHeight * minScale) / 2
+    if (x !== translation.x && y !== translation.y) {
+      setTranslation({ x, y })
     }
-
-    const x = (boxWidth - svgWidth * newScale) / 2
-    const y = (boxHeight - svgHeight * newScale) / 2
-
-    setScale(newScale)
-    setTranslation({ x, y })
-  }
-
-  if (initialRender) {
-    const ref = querySvg()
-    maybeUpdateRect(ref, [svgRect, setSVGRect])
-    maybeUpdateScale()
   }
 
   return (
-    <div id="treeWrapper" ref={(x) => maybeUpdateRect(x, [boxRect, setBoxRect])}>
+    <div id="treeWrapper" ref={(x) => maybeUpdateBox(x)}>
       <Tree
         data={toD3Tree(props.tree)}
         orientation="vertical"
@@ -184,8 +188,6 @@ export const TreeView = (props: TreeViewProps) => {
         pathClassFunc={linkClass}
         onUpdate={() => {
           initialRender && setInitialRender(false)
-          const ref = querySvg()
-          maybeUpdateRect(ref, [svgRect, setSVGRect])
         }}
       />
     </div>
