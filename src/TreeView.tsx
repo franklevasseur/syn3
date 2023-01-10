@@ -17,19 +17,17 @@ type RenderHook = {
 
 type Point = { x: number; y: number }
 type Circle = Point & { radius: number }
-type BoundingRect = Point & {
+type Rectangle = Point & {
   width: number
   height: number
 }
 
 type TreePOsition = {
-  boundingRect: BoundingRect
+  bounding: Rectangle
   rootNode: Circle
 }
 
-type RenderStatus = 'init' | 'done'
-
-const rectEquals = (a: BoundingRect, b: BoundingRect) => a.x === b.x && a.y === b.y && a.width === b.width && a.height === b.height
+const rectEquals = (a: Rectangle, b: Rectangle) => a.x === b.x && a.y === b.y && a.width === b.width && a.height === b.height
 
 const SPACING_FACTOR = 0.9
 const POS_DELTA_Y = -40
@@ -131,23 +129,23 @@ const getTreePosition = (): TreePOsition | undefined => {
   }
 
   const { x, y, width } = rootNode.getBoundingClientRect()
-  return { boundingRect: fullTree.getBoundingClientRect(), rootNode: { x, y, radius: width / 2 } }
+  return { bounding: fullTree.getBoundingClientRect(), rootNode: { x, y, radius: width / 2 } }
 }
 
 export const TreeView = (props: TreeViewProps) => {
-  const [box, setBox] = useState<BoundingRect | null>(null)
+  const [box, setBox] = useState<Rectangle | null>(null)
 
   const [scale, setScale] = useState<number>(1)
   const [translation, setTranslation] = useState<{ x: number; y: number }>({ x: 0, y: 0 })
 
-  const [initialRender, setInitialRendered] = useState<boolean>(true)
+  const [initialRender, setInitialRender] = useState<boolean>(true)
 
   const scaling = (l1: number, l2: number) => (SPACING_FACTOR * l2) / l1
 
   const treePosition = getTreePosition()
 
   if (box && treePosition && initialRender) {
-    const { boundingRect: treeRect, rootNode } = treePosition
+    const { bounding: treeRect, rootNode } = treePosition
 
     const widthScaling = scaling(treeRect.width, box.width)
     const heightScaling = scaling(treeRect.height, box.height)
@@ -164,7 +162,7 @@ export const TreeView = (props: TreeViewProps) => {
 
     setScale(newScale)
     setTranslation({ x, y })
-    setInitialRendered(false)
+    setInitialRender(false)
   }
 
   return (
