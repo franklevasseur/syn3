@@ -2,10 +2,12 @@ import './TreeView.css'
 import { useState } from 'react'
 import Tree from 'react-d3-tree'
 import { CustomNodeElementProps, Orientation, RawNodeDatum, TreeLinkDatum } from 'react-d3-tree/lib/types/common'
+import { MdCenterFocusStrong } from 'react-icons/md'
 import { tree } from './parser'
 
 type TreeViewProps = {
   tree: tree.Tree
+  reset: () => void
 }
 
 type RenderHook = {
@@ -13,6 +15,21 @@ type RenderHook = {
   render: string
 }
 
+type Point = { x: number; y: number }
+type Circle = Point & { radius: number }
+type Rectangle = Point & {
+  width: number
+  height: number
+}
+
+type TreePOsition = {
+  bounding: Rectangle
+  rootNode: Circle
+}
+
+const rectEquals = (a: Rectangle, b: Rectangle) => a.x === b.x && a.y === b.y && a.width === b.width && a.height === b.height
+
+const SPACING_FACTOR = 0.9
 const POS_DELTA_Y = -40
 const LEAF_UNIQ_DELTA_Y = -135
 const LEAF_SIBLINGS_DELTA_Y = 0
@@ -100,17 +117,80 @@ const linkClass = ({ source, target }: TreeLinkDatum, orientation: Orientation):
   return onlyChild ? 'no_link' : 'leaf_link'
 }
 
+const getTreePosition = (): TreePOsition | undefined => {
+  const fullTree = document.querySelector<SVGGElement>('.rd3t-g')
+  if (!fullTree) {
+    return
+  }
+
+  const rootNode = document.querySelector<SVGCircleElement>('.node__root circle')
+  if (!rootNode) {
+    return
+  }
+
+  const { x, y, width } = rootNode.getBoundingClientRect()
+  return { bounding: fullTree.getBoundingClientRect(), rootNode: { x, y, radius: width / 2 } }
+}
+
 export const TreeView = (props: TreeViewProps) => {
-  const [x, setX] = useState<HTMLDivElement | null>(null)
-  const { width, height } = x?.getBoundingClientRect() ?? { width: 0, height: 0 }
+  const [box, setBox] = useState<Rectangle | null>(null)
+
+  const [scale, setScale] = useState<number>(1)
+  const [translation, setTranslation] = useState<{ x: number; y: number }>({ x: 0, y: 0 })
+
+  const [initialRender, setInitialRender] = useState<boolean>(true)
+
+  const scaling = (l1: number, l2: number) => (SPACING_FACTOR * l2) / l1
+
+  const treePosition = getTreePosition()
+
+  if (box && treePosition && initialRender) {
+    const { bounding: treeRect, rootNode } = treePosition
+
+    const widthScaling = scaling(treeRect.width, box.width)
+    const heightScaling = scaling(treeRect.height, box.height)
+    const newScale = Math.min(widthScaling, heightScaling, 1)
+
+    let x = (box.width - treeRect.width * newScale) / 2
+    let y = (box.height - treeRect.height * newScale) / 2
+
+    const rootNodeXOffset = (rootNode.x - treeRect.x) * newScale
+    x += rootNodeXOffset
+
+    const rootNodeYOffset = (rootNode.y - treeRect.y) * newScale
+    y += rootNodeYOffset
+
+    setScale(newScale)
+    setTranslation({ x, y })
+    setInitialRender(false)
+  }
+
   return (
-    <div id="treeWrapper" ref={(x) => setX(x)}>
+    <div
+      id="treeWrapper"
+      ref={(x) => {
+        if (!x) {
+          return
+        }
+        const rect = x.getBoundingClientRect()
+        if (box && rectEquals(rect, box)) {
+          return
+        }
+        setBox(rect)
+      }}
+    >
+      <div
+        style={{ position: 'absolute', right: '5px', top: '2px', border: 'solid 1px', borderRadius: '5px', cursor: 'pointer' }}
+        onClick={props.reset}
+      >
+        <MdCenterFocusStrong size={30} />
+      </div>
       <Tree
         data={toD3Tree(props.tree)}
         orientation="vertical"
         collapsible={false}
-        translate={{ x: width / 2, y: height / 8 }}
-        zoom={0.75}
+        translate={translation}
+        zoom={scale}
         rootNodeClassName="node__root"
         branchNodeClassName="node__branch"
         leafNodeClassName="node__leaf"
