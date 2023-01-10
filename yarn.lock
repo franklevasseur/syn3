@@ -4366,6 +4366,11 @@ d3-shape@^1.3.7:
   dependencies:
     d3-path "1"
 
+d3-svg-to-png@^0.2.1:
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/d3-svg-to-png/-/d3-svg-to-png-0.2.1.tgz#23aa216a6a611b5203943b2487be2768ce4cac88"
+  integrity sha512-QQLGVDZTJQQ/cKldqUdZ6Mgi5AwrEfwhP6UwQgmQmTm0vJajROeytySAM1nHvFEGyv3XyppGXmyiNrw7SdMEQw==
+
 d3-timer@1:
   version "1.0.10"
   resolved "https://registry.yarnpkg.com/d3-timer/-/d3-timer-1.0.10.tgz#dfe76b8a91748831b13b6d9c793ffbd508dd9de5"
@@ -9739,6 +9744,11 @@ react-fast-compare@^3.0.1:
   version "3.2.0"
   resolved "https://registry.yarnpkg.com/react-fast-compare/-/react-fast-compare-3.2.0.tgz#641a9da81b6a6320f270e89724fb45a0b39e43bb"
   integrity sha512-rtGImPZ0YyLrscKI9xTpV8psd6I8VAtjKCzQDlzyDvqJA8XOW78TXYQwNRNd8g8JZnDu8q9Fu/1v4HPAVwVdHA==
+
+react-icons@^4.7.1:
+  version "4.7.1"
+  resolved "https://registry.yarnpkg.com/react-icons/-/react-icons-4.7.1.tgz#0f4b25a5694e6972677cb189d2a72eabea7a8345"
+  integrity sha512-yHd3oKGMgm7zxo3EA7H2n7vxSoiGmHk5t6Ou4bXsfcgWyhfDKMpyKfhHR6Bjnn63c+YXBLBPUql9H4wPJM6sXw==
 
 react-is@^16.13.1, react-is@^16.8.4:
   version "16.13.1"
