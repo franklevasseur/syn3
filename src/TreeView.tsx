@@ -2,6 +2,7 @@ import './TreeView.css'
 import { useState } from 'react'
 import Tree from 'react-d3-tree'
 import { CustomNodeElementProps, Orientation, RawNodeDatum, TreeLinkDatum } from 'react-d3-tree/lib/types/common'
+import { MdCenterFocusStrong } from 'react-icons/md'
 import { tree } from './parser'
 
 type TreeViewProps = {
@@ -127,10 +128,17 @@ const getSvgRectangles = () => {
 }
 
 export const TreeView = (props: TreeViewProps) => {
-  const [boxRect, setBoxRect] = useState<BoundingRect>({ ...EMPTY_RECT })
+  const [boxRect, setBoxRect] = useState<BoundingRect>(EMPTY_RECT)
   const [scale, setScale] = useState<number>(1)
   const [translation, setTranslation] = useState<{ x: number; y: number }>({ x: 0, y: 0 })
   const [initialRender, setInitialRender] = useState<boolean>(true)
+
+  const resetView = () => {
+    setBoxRect(EMPTY_RECT)
+    setScale(1)
+    setTranslation({ x: 0, y: 0 })
+    setInitialRender(true)
+  }
 
   const { width: boxWidth, height: boxHeight } = boxRect
 
@@ -173,6 +181,12 @@ export const TreeView = (props: TreeViewProps) => {
 
   return (
     <div id="treeWrapper" ref={(x) => maybeUpdateBox(x)}>
+      <div
+        style={{ position: 'absolute', right: '5px', top: '2px', border: 'solid 1px', borderRadius: '5px', cursor: 'pointer' }}
+        onClick={resetView}
+      >
+        <MdCenterFocusStrong size={30} />
+      </div>
       <Tree
         data={toD3Tree(props.tree)}
         orientation="vertical"
