@@ -22,6 +22,7 @@ const setQueryText = (text: string | null) => {
 
 const App = () => {
   const [tree, setTree] = useState<tree.Tree | undefined>(undefined)
+  const [treeViewKey, setTreeViewKey] = useState<number>(Date.now())
 
   const initialValue = getQueryText() || DEFAULT_INITIAL_VALUE
 
@@ -44,7 +45,7 @@ const App = () => {
             setQueryText(tree.text)
           }}
         />
-        {tree && <TreeView tree={tree} />}
+        {tree && <TreeView key={treeViewKey} tree={tree} reset={() => setTreeViewKey(Date.now())} />}
       </div>
     </div>
   )

@@ -7,6 +7,7 @@ import { tree } from './parser'
 
 type TreeViewProps = {
   tree: tree.Tree
+  reset: () => void
 }
 
 type RenderHook = {
@@ -14,18 +15,23 @@ type RenderHook = {
   render: string
 }
 
-type BoundingRect = {
-  x: number
-  y: number
+type Point = { x: number; y: number }
+type Circle = Point & { radius: number }
+type BoundingRect = Point & {
   width: number
   height: number
 }
 
-const EMPTY_RECT: BoundingRect = { x: 0, y: 0, width: 0, height: 0 }
+type TreePOsition = {
+  boundingRect: BoundingRect
+  rootNode: Circle
+}
+
+type RenderStatus = 'init' | 'done'
+
 const rectEquals = (a: BoundingRect, b: BoundingRect) => a.x === b.x && a.y === b.y && a.width === b.width && a.height === b.height
 
 const SPACING_FACTOR = 0.9
-
 const POS_DELTA_Y = -40
 const LEAF_UNIQ_DELTA_Y = -135
 const LEAF_SIBLINGS_DELTA_Y = 0
@@ -113,77 +119,71 @@ const linkClass = ({ source, target }: TreeLinkDatum, orientation: Orientation):
   return onlyChild ? 'no_link' : 'leaf_link'
 }
 
-const getSvgRectangles = () => {
+const getTreePosition = (): TreePOsition | undefined => {
   const fullTree = document.querySelector<SVGGElement>('.rd3t-g')
   if (!fullTree) {
     return
   }
 
-  const rootNode = document.querySelector<SVGGElement>('.node__root')
+  const rootNode = document.querySelector<SVGCircleElement>('.node__root circle')
   if (!rootNode) {
     return
   }
 
-  return { fullTree: fullTree.getBoundingClientRect(), rootNode: rootNode.getBoundingClientRect() }
+  const { x, y, width } = rootNode.getBoundingClientRect()
+  return { boundingRect: fullTree.getBoundingClientRect(), rootNode: { x, y, radius: width / 2 } }
 }
 
 export const TreeView = (props: TreeViewProps) => {
-  const [boxRect, setBoxRect] = useState<BoundingRect>(EMPTY_RECT)
+  const [box, setBox] = useState<BoundingRect | null>(null)
+
   const [scale, setScale] = useState<number>(1)
   const [translation, setTranslation] = useState<{ x: number; y: number }>({ x: 0, y: 0 })
-  const [initialRender, setInitialRender] = useState<boolean>(true)
 
-  const resetView = () => {
-    setBoxRect(EMPTY_RECT)
-    setScale(1)
-    setTranslation({ x: 0, y: 0 })
-    setInitialRender(true)
-  }
-
-  const { width: boxWidth, height: boxHeight } = boxRect
-
-  const maybeUpdateBox = (x: HTMLDivElement | null) => {
-    if (!x) {
-      return
-    }
-
-    const rect = x.getBoundingClientRect()
-    if (rectEquals(rect, boxRect)) {
-      return
-    }
-
-    setBoxRect(rect)
-  }
+  const [initialRender, setInitialRendered] = useState<boolean>(true)
 
   const scaling = (l1: number, l2: number) => (SPACING_FACTOR * l2) / l1
-  const svgRects = getSvgRectangles()
-  if (initialRender && svgRects) {
-    const { fullTree, rootNode } = svgRects
-    const { x: svgX, width: svgWidth, height: svgHeight } = fullTree
-    const { x: rootX } = rootNode
 
-    const currentScale = scale
-    const widthScaling = scaling(svgWidth, boxWidth)
-    const heightScaling = scaling(svgHeight, boxHeight)
-    const minScale = Math.min(widthScaling, heightScaling)
-    const newScale = Math.min(minScale, currentScale)
-    if (newScale !== currentScale) {
-      setScale(newScale)
-    }
+  const treePosition = getTreePosition()
 
-    const x0 = rootX - svgX * minScale
-    const x = x0 + (boxWidth - svgWidth * minScale) / 2
-    const y = (boxHeight - svgHeight * minScale) / 2
-    if (x !== translation.x && y !== translation.y) {
-      setTranslation({ x, y })
-    }
+  if (box && treePosition && initialRender) {
+    const { boundingRect: treeRect, rootNode } = treePosition
+
+    const widthScaling = scaling(treeRect.width, box.width)
+    const heightScaling = scaling(treeRect.height, box.height)
+    const newScale = Math.min(widthScaling, heightScaling, 1)
+
+    let x = (box.width - treeRect.width * newScale) / 2
+    let y = (box.height - treeRect.height * newScale) / 2
+
+    const rootNodeXOffset = (rootNode.x - treeRect.x) * newScale
+    x += rootNodeXOffset
+
+    const rootNodeYOffset = (rootNode.y - treeRect.y) * newScale
+    y += rootNodeYOffset
+
+    setScale(newScale)
+    setTranslation({ x, y })
+    setInitialRendered(false)
   }
 
   return (
-    <div id="treeWrapper" ref={(x) => maybeUpdateBox(x)}>
+    <div
+      id="treeWrapper"
+      ref={(x) => {
+        if (!x) {
+          return
+        }
+        const rect = x.getBoundingClientRect()
+        if (box && rectEquals(rect, box)) {
+          return
+        }
+        setBox(rect)
+      }}
+    >
       <div
         style={{ position: 'absolute', right: '5px', top: '2px', border: 'solid 1px', borderRadius: '5px', cursor: 'pointer' }}
-        onClick={resetView}
+        onClick={props.reset}
       >
         <MdCenterFocusStrong size={30} />
       </div>
@@ -200,9 +200,6 @@ export const TreeView = (props: TreeViewProps) => {
         renderCustomNodeElement={renderNode}
         pathFunc={funcPath}
         pathClassFunc={linkClass}
-        onUpdate={() => {
-          initialRender && setInitialRender(false)
-        }}
       />
     </div>
   )
