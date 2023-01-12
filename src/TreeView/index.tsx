@@ -1,7 +1,7 @@
 import './index.css'
 import { useState } from 'react'
 import Tree from 'react-d3-tree'
-import { CustomNodeElementProps, Orientation, RawNodeDatum, TreeLinkDatum } from 'react-d3-tree/lib/types/common'
+import { CustomNodeElementProps, Orientation, RawNodeDatum, TreeLinkDatum } from 'react-d3-tree/lib/types/types/common'
 import { tree } from '../parser'
 import { ToolBar } from './ToolBar'
 
@@ -213,6 +213,7 @@ export const TreeView = (props: TreeViewProps) => {
         renderCustomNodeElement={renderNode}
         pathFunc={funcPath}
         pathClassFunc={linkClass}
+        draggable
       />
     </div>
   )

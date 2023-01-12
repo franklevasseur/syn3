@@ -1,7 +1,9 @@
 // forked from https://github.com/Soreine/draft-js-simpledecorator/blob/master/index.js
-import { Tooltip2 } from '@blueprintjs/popover2'
+import 'react-tooltip/dist/react-tooltip.css'
 import * as draft from 'draft-js'
 import * as Immutable from 'immutable'
+import react from 'react'
+import { Tooltip } from 'react-tooltip'
 import { parse, tree } from '../parser'
 import { TreeParsingError } from '../parser/errors'
 import { highlightSyntax } from './syntax-highlight'
@@ -98,9 +100,11 @@ export class TreeDecorator implements draft.DraftDecoratorType {
 
   private _component = (props: TreeProps & ComponentProps) => {
     if (props.type === 'error') {
+      const errorId = `${Date.now()}`
       return (
-        <Tooltip2 content={props.message} position="bottom" intent="danger">
+        <react.Fragment>
           <span
+            id={errorId}
             style={{
               textDecoration: 'underline red 4px',
               textDecorationSkipInk: 'none',
@@ -108,7 +112,8 @@ export class TreeDecorator implements draft.DraftDecoratorType {
           >
             {props.children}
           </span>
-        </Tooltip2>
+          <Tooltip style={{ background: '#e84a4a' }} anchorId={errorId} place="bottom" content={props.message} noArrow />
+        </react.Fragment>
       )
     }
 
