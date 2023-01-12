@@ -1,5 +1,3 @@
-@import "~@blueprintjs/popover2/lib/css/blueprint-popover2.css";
-
 .App {
   padding: 1%;
   background: white;
@@ -20,7 +18,7 @@
   font-size: 2rem;
   font-weight: bold;
   text-align: center;
-  color: #316BCD;
+  color: #316bcd;
 }
 
 .editor-box {

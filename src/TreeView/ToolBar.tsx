@@ -1,9 +1,10 @@
 import './ToolBar.css'
-import { Tooltip2 } from '@blueprintjs/popover2'
+import 'react-toastify/dist/ReactToastify.css'
+import 'react-tooltip/dist/react-tooltip.css'
 import d3ToPng from 'd3-svg-to-png'
 import { MdCenterFocusStrong, MdOutlinePhotoCamera } from 'react-icons/md'
 import { ToastContainer, toast } from 'react-toastify'
-import 'react-toastify/dist/ReactToastify.css'
+import { Tooltip } from 'react-tooltip'
 
 type ToolBarProps = {
   resetView: () => void
@@ -20,18 +21,19 @@ export const ToolBar = (props: ToolBarProps) => {
     toast('Image copied to clipboard! 📋', { autoClose: 1000, position: 'bottom-right', type: 'success', hideProgressBar: true })
   }
 
+  const alignCenterId = 'align-center'
+  const copyImageId = 'copy-image'
+
   return (
     <div className="toolbar">
-      <Tooltip2 content="align center" position="bottom" intent="primary" minimal>
-        <div className="toolbar-button" onClick={props.resetView}>
-          <MdCenterFocusStrong size={30} />
-        </div>
-      </Tooltip2>
-      <Tooltip2 content="copy image" position="bottom" intent="primary" minimal>
-        <div className="toolbar-button" onClick={copyImage}>
-          <MdOutlinePhotoCamera size={30} />
-        </div>
-      </Tooltip2>
+      <div id={alignCenterId} className="toolbar-button" onClick={props.resetView}>
+        <MdCenterFocusStrong size={30} />
+      </div>
+      <div id={copyImageId} className="toolbar-button" onClick={copyImage}>
+        <MdOutlinePhotoCamera size={30} />
+      </div>
+      <Tooltip style={{ background: '#316BCD' }} anchorId={alignCenterId} place="bottom" content="align center" noArrow />
+      <Tooltip style={{ background: '#316BCD' }} anchorId={copyImageId} place="bottom" content="copy image" noArrow />
       <ToastContainer />
     </div>
   )
