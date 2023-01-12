@@ -1,0 +1,17 @@
+.toolbar {
+  position: absolute;
+  right: 5px;
+  top: 3px;
+  display: flex;
+}
+
+.toolbar-button {
+  border: solid 1px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-left: 3px;
+}
+
+.toolbar-button:hover {
+  background-color: #e0e0e0;
+}

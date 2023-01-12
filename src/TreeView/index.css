@@ -4,6 +4,11 @@
   border: solid 1px;
   background: #f1f1f1;
   border-radius: 5px;
+  position: relative;
+}
+
+.screenshot {
+  animation: screenshot 1s;
 }
 
 .node {
@@ -27,4 +32,17 @@
 
 .no_link {
   display: none;
+}
+
+/* .rd3t-g {
+  outline: solid 1px blue;
+} */
+
+@keyframes screenshot {
+  0% {
+    background-color: #222;
+  }
+  100% {
+    background-color: #f1f1f1;
+  }
 }

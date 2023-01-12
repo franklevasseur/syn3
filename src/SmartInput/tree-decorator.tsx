@@ -1,10 +1,12 @@
 // forked from https://github.com/Soreine/draft-js-simpledecorator/blob/master/index.js
-import { Tooltip2 } from '@blueprintjs/popover2'
+import 'react-tooltip/dist/react-tooltip.css'
 import * as draft from 'draft-js'
 import * as Immutable from 'immutable'
+import react from 'react'
+import { Tooltip } from 'react-tooltip'
 import { parse, tree } from '../parser'
 import { TreeParsingError } from '../parser/errors'
-import { treeToColor } from './tree2colors'
+import { highlightSyntax } from './syntax-highlight'
 
 const KEY_SEPARATOR = '▁'
 
@@ -23,8 +25,7 @@ export type TreeEvent =
   | { type: 'error'; err: TreeParsingError; text: string }
   | {
       type: 'parse'
-      bottomUp: tree.bottomup.BottomUpTree
-      topDown: tree.topdown.TopDownTree
+      tree: tree.Tree
       text: string
     }
 export type TreeListener = (e: TreeEvent) => void
@@ -73,16 +74,17 @@ export class TreeDecorator implements draft.DraftDecoratorType {
 
   private _strategy = (block: draft.ContentBlock, callback: (start: number, end: number, props: TreeProps) => void) => {
     const text = block.getText()
-    try {
-      const { bottomUpTree: bottomUp, topDownTree: topDown } = parse(text)
-      this._emitEvent({ type: 'parse', bottomUp, topDown, text })
-      const colors = treeToColor(bottomUp, text)
-      for (const span of colors) {
-        if (span.color === undefined) {
-          continue
-        }
-        callback(span.start, span.end, { type: 'brackets', color: span.color })
+    const colors = highlightSyntax(text)
+    for (const span of colors) {
+      if (span.color === undefined) {
+        continue
       }
+      callback(span.start, span.end, { type: 'brackets', color: span.color })
+    }
+
+    try {
+      const { tree } = parse(text)
+      this._emitEvent({ type: 'parse', tree, text })
     } catch (thrown) {
       const err = thrown instanceof Error ? thrown : new Error(`${thrown}`)
       if (err instanceof TreeParsingError) {
@@ -98,9 +100,11 @@ export class TreeDecorator implements draft.DraftDecoratorType {
 
   private _component = (props: TreeProps & ComponentProps) => {
     if (props.type === 'error') {
+      const errorId = `${Date.now()}`
       return (
-        <Tooltip2 content={props.message} position="bottom" intent="danger">
+        <react.Fragment>
           <span
+            id={errorId}
             style={{
               textDecoration: 'underline red 4px',
               textDecorationSkipInk: 'none',
@@ -108,7 +112,8 @@ export class TreeDecorator implements draft.DraftDecoratorType {
           >
             {props.children}
           </span>
-        </Tooltip2>
+          <Tooltip style={{ background: '#e84a4a' }} anchorId={errorId} place="bottom" content={props.message} noArrow />
+        </react.Fragment>
       )
     }
 

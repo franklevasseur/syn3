@@ -1,11 +1,5 @@
-- [x] FEAT : Display brackets and pos tags in color with Draft.js
-- [x] FEAT : Display errors with red underline in Draft.js
-- [x] FEAT : Display syntax tree structure below the input box
-- [x] FEAT : Use query params to store the input text
-- [ ] CHORE/BUG : Syntax highlighting for braces should be independent of the syntax parser
-- [ ] CHORE : merge bottomup and topdown trees into one
-- [ ] FEAT : Color tree nodes and branches with the same color as the corresponding bracket
+- [ ] FEAT : Collect usage telemetry
+- [ ] CHORE : rewrite tokenizer for a better computational complexity
 - [ ] FEAT : Allow multiline input (requires refactor of draftjs editor)
+- [ ] FEAT : Color tree nodes and branches with the same color as the corresponding bracket
 - [ ] FEAT : Allow multiple roots in UI
-- [ ] FEAT : Allow cpy tree as SVG
-- [ ] FEAT : Display few special characters like phi and whitespace

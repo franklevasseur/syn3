@@ -1,11 +1,11 @@
-import { useState } from 'react'
 import './App.css'
+import { useState } from 'react'
 import { tree } from './parser'
 import { SmartInput } from './SmartInput'
 import { TreeView } from './TreeView'
 
 const DEFAULT_INITIAL_VALUE =
-  "[ST [SN Luc] [T' [T (présent,3sg)] [SV [V' [SN se] [V demande]] [SC [SP où] [C' [C ϕ] [ST [SN il] [T' [T (présent,3sg)] [SV [V' [V a mis] [SN [Det le] [N' [N chat.]]]]]]]]]]]]"
+  "[ST [SN Luc] [T' [T \\[présent,3sg\\]] [SV [V' [SN se] [V demande]] [SC [SP où] [C' [C :phi:] [ST [SN il] [T' [T \\[présent,3sg\\]] [SV [V' [V a mis] [SN [Det le] [N' [N chat.]]]]]]]]]]]]"
 
 const getQueryText = (): string | null => {
   const url = new URL(window.location.toString())
@@ -21,7 +21,8 @@ const setQueryText = (text: string | null) => {
 }
 
 const App = () => {
-  const [tree, setTree] = useState<tree.topdown.TopDownTree | undefined>(undefined)
+  const [tree, setTree] = useState<tree.Tree | undefined>(undefined)
+  const [treeViewKey, setTreeViewKey] = useState<number>(Date.now())
 
   const initialValue = getQueryText() || DEFAULT_INITIAL_VALUE
 
@@ -35,7 +36,7 @@ const App = () => {
           initialValue={initialValue}
           onChange={({ tree }) => {
             if (tree.type === 'parse') {
-              setTree(tree.topDown)
+              setTree(tree.tree)
             }
             if (tree.type === 'error') {
               setTree(undefined)
@@ -44,7 +45,7 @@ const App = () => {
             setQueryText(tree.text)
           }}
         />
-        {tree && <TreeView tree={tree} />}
+        {tree && <TreeView key={treeViewKey} tree={tree} reset={() => setTreeViewKey(Date.now())} />}
       </div>
     </div>
   )
