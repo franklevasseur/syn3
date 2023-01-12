@@ -2,6 +2,8 @@ import './ToolBar.css'
 import { Tooltip2 } from '@blueprintjs/popover2'
 import d3ToPng from 'd3-svg-to-png'
 import { MdCenterFocusStrong, MdOutlinePhotoCamera } from 'react-icons/md'
+import { ToastContainer, toast } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 
 type ToolBarProps = {
   resetView: () => void
@@ -15,6 +17,7 @@ export const ToolBar = (props: ToolBarProps) => {
     const imgUrl = await d3ToPng(props.treeSelector, 'syn3', { scale: 2, download: false })
     const imgBlob = await fetch(imgUrl).then((r) => r.blob())
     await navigator.clipboard.write([new ClipboardItem({ 'image/png': imgBlob })])
+    toast('Image copied to clipboard! 📋', { autoClose: 1000, position: 'bottom-right', type: 'success', hideProgressBar: true })
   }
 
   return (
@@ -29,6 +32,7 @@ export const ToolBar = (props: ToolBarProps) => {
           <MdOutlinePhotoCamera size={30} />
         </div>
       </Tooltip2>
+      <ToastContainer />
     </div>
   )
 }
