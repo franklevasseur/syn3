@@ -1,5 +1,5 @@
-import { useState } from 'react'
 import './App.css'
+import { useState } from 'react'
 import { tree } from './parser'
 import { SmartInput } from './SmartInput'
 import { TreeView } from './TreeView'
